@@ -45,7 +45,7 @@ td {
 /* Dark Mode für Formulare */
 input, select, textarea {
     background-color: #262626 !important;
-    color: #e0e0e0 !important;
+    color: #ffffff !important;
     border-color: #444 !important;
 }
 

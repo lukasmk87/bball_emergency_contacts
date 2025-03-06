@@ -285,15 +285,18 @@ $csrf_token = generateCSRFToken();
         <?php endif; ?>
                         
                         <?php if (!empty($selectedTeamId)): ?>
-                            <div class="flex space-x-2">
-                                <a href="players.php?team_id=<?= $selectedTeamId ?>" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">
-                                    <i class="fas fa-user-plus mr-2"></i>Spieler verwalten
-                                </a>
-                                <a href="export.php?team_id=<?= $selectedTeamId ?>&format=print" class="bg-green-500 text-white p-2 rounded hover:bg-green-600">
-                                    <i class="fas fa-print mr-2"></i>Drucken
-                                </a>
-                                <a href="export.php?team_id=<?= $selectedTeamId ?>&format=csv" class="bg-orange-500 text-white p-2 rounded hover:bg-orange-600">
-                                    <i class="fas fa-file-csv mr-2"></i>CSV
-                                </a>
-                            </div>
-                        <?php endif; ?>
+    <div class="flex space-x-2">
+        <a href="players.php?team_id=<?= $selectedTeamId ?>" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">
+            <i class="fas fa-user-plus mr-2"></i>Spieler verwalten
+        </a>
+        <a href="export.php?team_id=<?= $selectedTeamId ?>&format=print" class="bg-green-500 text-white p-2 rounded hover:bg-green-600">
+            <i class="fas fa-print mr-2"></i>Drucken
+        </a>
+        <a href="export.php?team_id=<?= $selectedTeamId ?>&format=csv" class="bg-orange-500 text-white p-2 rounded hover:bg-orange-600">
+            <i class="fas fa-file-csv mr-2"></i>CSV
+        </a>
+        <a href="team_qrcode.php?team_id=<?= $selectedTeamId ?>" class="bg-purple-500 text-white p-2 rounded hover:bg-purple-600">
+            <i class="fas fa-qrcode mr-2"></i>QR-Code
+        </a>
+    </div>
+<?php endif; ?>
