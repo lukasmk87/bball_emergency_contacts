@@ -1,0 +1,253 @@
+/* Dark Mode Grundeinstellungen */
+body {
+    background-color: #121212 !important;
+    color: #e0e0e0 !important;
+}
+
+/* Dark Mode für Hauptcontainer */
+.bg-white, .bg-gray-50, .bg-gray-100 {
+    background-color: #1e1e1e !important;
+    color: #e0e0e0 !important;
+}
+
+/* Dark Mode für Navigation */
+.bg-orange-500 {
+    background-color: #e65100 !important;
+}
+
+/* Dark Mode für Text */
+.text-gray-600, .text-gray-700, .text-gray-800, .text-gray-900 {
+    color: #b0b0b0 !important;
+}
+
+/* Dark Mode für Tabellenzeilen */
+table tbody tr {
+    background-color: #1e1e1e !important;
+    border-color: #333 !important;
+}
+
+table tbody tr:hover {
+    background-color: #262626 !important;
+}
+
+thead {
+    background-color: #262626 !important;
+}
+
+th {
+    color: #b0b0b0 !important;
+}
+
+td {
+    border-color: #333 !important;
+}
+
+/* Dark Mode für Formulare */
+input, select, textarea {
+    background-color: #262626 !important;
+    color: #e0e0e0 !important;
+    border-color: #444 !important;
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: #e65100 !important;
+    box-shadow: 0 0 0 3px rgba(237, 137, 54, 0.4) !important;
+}
+
+::placeholder {
+    color: #808080 !important;
+    opacity: 1;
+}
+
+select option {
+    background-color: #262626 !important;
+    color: #e0e0e0 !important;
+}
+
+/* Dark Mode für Buttons */
+.bg-gray-300, .bg-gray-400 {
+    background-color: #383838 !important;
+    color: #e0e0e0 !important;
+}
+
+.bg-gray-300:hover, .bg-gray-400:hover {
+    background-color: #444444 !important;
+}
+
+/* Status Badges im Dark Mode */
+.badge-green, .bg-green-100 {
+    background-color: #1b3a2a !important;
+    color: #7ae2b0 !important;
+}
+
+.badge-blue, .bg-blue-100 {
+    background-color: #1a365d !important;
+    color: #90cdf4 !important;
+}
+
+.badge-orange, .bg-orange-100 {
+    background-color: #492a05 !important;
+    color: #febe89 !important;
+}
+
+.badge-red, .bg-red-100 {
+    background-color: #4a1d1a !important;
+    color: #feb2b2 !important;
+}
+
+/* Messages im Dark Mode */
+.bg-green-100 {
+    background-color: #1b3a2a !important;
+    border-color: #38a169 !important;
+}
+
+.text-green-700 {
+    color: #7ae2b0 !important;
+}
+
+.bg-red-100 {
+    background-color: #4a1d1a !important;
+    border-color: #e53e3e !important;
+}
+
+.text-red-700 {
+    color: #feb2b2 !important;
+}
+
+.bg-yellow-100 {
+    background-color: #483b02 !important;
+    border-color: #d69e2e !important;
+}
+
+.text-yellow-700 {
+    color: #fce96a !important;
+}
+
+.bg-blue-100 {
+    background-color: #1a365d !important;
+    border-color: #4299e1 !important;
+}
+
+.text-blue-700 {
+    color: #90cdf4 !important;
+}
+
+/* Karten und Container im Dark Mode */
+.shadow-md {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.25) !important;
+}
+
+.rounded-lg, .rounded {
+    border-color: #333 !important;
+}
+
+/* Links im Dark Mode */
+a {
+    color: #ed8936 !important;
+}
+
+a:hover {
+    color: #f6ad55 !important;
+}
+
+a.text-orange-600, a.text-blue-600, a.text-green-600 {
+    color: #ed8936 !important;
+}
+
+a.text-orange-600:hover, a.text-blue-600:hover, a.text-green-600:hover {
+    color: #f6ad55 !important;
+}
+
+a.text-red-600 {
+    color: #f56565 !important;
+}
+
+a.text-red-600:hover {
+    color: #fc8181 !important;
+}
+
+/* Dark Mode spezifische Transition */
+.page-transition {
+    animation: fadeInDark 0.3s ease-in-out;
+}
+
+@keyframes fadeInDark {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Autovervollständigung */
+.autocomplete-items {
+    background-color: #262626 !important;
+    border-color: #444 !important;
+}
+
+.autocomplete-items div {
+    background-color: #262626 !important;
+    border-color: #444 !important;
+    color: #e0e0e0 !important;
+}
+
+.autocomplete-items div:hover {
+    background-color: #333 !important;
+}
+
+.autocomplete-active {
+    background-color: #333 !important;
+}
+
+/* Transitions für Dropdown-Menüs */
+#user-menu {
+    transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+    transform-origin: top right;
+    transform: scale(0.95);
+    opacity: 0;
+    background-color: #262626 !important;
+    border-color: #444 !important;
+}
+
+#user-menu:not(.hidden) {
+    transform: scale(1);
+    opacity: 1;
+}
+
+#user-menu a {
+    color: #e0e0e0 !important;
+}
+
+#user-menu a:hover {
+    background-color: #333 !important;
+}
+
+/* Scrollbar für Dark Mode anpassen */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #262626 !important;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #e65100 !important;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #ff6d00 !important;
+}
+
+/* Print-Styles - hier ändern wir die Farben nicht, da Drucke immer in Schwarz-Weiß sein sollten */
+@media print {
+    body {
+        background-color: white !important;
+        color: black !important;
+    }
+    
+    .container, .bg-white, table, tr, td, th {
+        background-color: white !important;
+        color: black !important;
+    }
+}
