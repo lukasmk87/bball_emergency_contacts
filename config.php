@@ -1,9 +1,9 @@
 <?php
 // Datenbankverbindungskonfiguration
 define('DB_HOST', 'localhost');     // Host der MariaDB-Datenbank
-define('DB_NAME', 'd04301cf');   // Name der Datenbank
-define('DB_USER', 'd04301cf');     // Benutzername für die Datenbank
-define('DB_PASS', 'yvtfgi3Sp3XFTiGbjY2G');    // Passwort für den Datenbankbenutzer
+define('DB_NAME', '#######');   // Name der Datenbank
+define('DB_USER', '########');     // Benutzername für die Datenbank
+define('DB_PASS', '##########');    // Passwort für den Datenbankbenutzer
 
 // Zeitzone setzen
 date_default_timezone_set('Europe/Berlin');
