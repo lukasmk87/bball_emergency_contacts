@@ -70,27 +70,7 @@ switch ($activeTab) {
         break;
         
     case 'users':
-        if ($isAdmin) {
-            // Alle Benutzer für Admins laden
-            $users = db()->fetchAll("SELECT * FROM users ORDER BY name");
-            
-            // Teams für jeden Benutzer abrufen
-            foreach ($users as &$user) {
-                $userTeams = db()->fetchAll("
-                    SELECT t.name 
-                    FROM teams t
-                    JOIN user_team ut ON t.id = ut.team_id
-                    WHERE ut.user_id = ?
-                ", [$user['id']]);
-                
-                $teamNames = array_column($userTeams, 'name');
-                $user['teams'] = empty($teamNames) ? 'Keine Teams' : implode(', ', $teamNames);
-                
-                if ($user['role'] === 'admin') {
-                    $user['teams'] = 'Alle Teams';
-                }
-            }
-        }
+        // Users will be loaded directly in the display section to avoid any filtering issues
         break;
 }
 
@@ -143,6 +123,25 @@ $csrf_token = generateCSRFToken();
                                 </select>
                             </div>
                         <?php endif; ?>
+                    </div>
+                </div>
+                
+                <?php if (!empty($selectedTeamId)): ?>
+                    <div class="flex space-x-2">
+                        <a href="players.php?team_id=<?= $selectedTeamId ?>" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">
+                            <i class="fas fa-user-plus mr-2"></i>Spieler verwalten
+                        </a>
+                        <a href="export.php?team_id=<?= $selectedTeamId ?>&format=print" class="bg-green-500 text-white p-2 rounded hover:bg-green-600">
+                            <i class="fas fa-print mr-2"></i>Drucken
+                        </a>
+                        <a href="export.php?team_id=<?= $selectedTeamId ?>&format=csv" class="bg-orange-500 text-white p-2 rounded hover:bg-orange-600">
+                            <i class="fas fa-file-csv mr-2"></i>CSV
+                        </a>
+                        <a href="team_qrcode.php?team_id=<?= $selectedTeamId ?>" class="bg-purple-500 text-white p-2 rounded hover:bg-purple-600">
+                            <i class="fas fa-qrcode mr-2"></i>QR-Code
+                        </a>
+                    </div>
+                <?php endif; ?>
             </div>
         <?php elseif ($activeTab === 'teams' && $isAdmin): ?>
             <!-- Teams Tab (Admin Only) -->
@@ -231,12 +230,16 @@ $csrf_token = generateCSRFToken();
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
-                            <?php if (empty($users)): ?>
+                            <?php 
+                            // Direct query to get all users
+                            $allUsers = db()->fetchAll("SELECT * FROM users ORDER BY name");
+                            if (empty($allUsers)): 
+                            ?>
                                 <tr>
                                     <td colspan="5" class="px-6 py-4 text-center text-gray-500">Keine Benutzer vorhanden</td>
                                 </tr>
                             <?php else: ?>
-                                <?php foreach ($users as $user): ?>
+                                <?php foreach ($allUsers as $user): ?>
                                     <tr>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="flex items-center">
@@ -262,7 +265,21 @@ $csrf_token = generateCSRFToken();
                                             </span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            <?= e($user['teams']) ?>
+                                            <?php
+                                            if ($user['role'] === 'admin') {
+                                                echo 'Alle Teams';
+                                            } else {
+                                                $userTeams = db()->fetchAll("
+                                                    SELECT t.name 
+                                                    FROM teams t
+                                                    JOIN user_team ut ON t.id = ut.team_id
+                                                    WHERE ut.user_id = ?
+                                                ", [$user['id']]);
+                                                
+                                                $teamNames = array_column($userTeams, 'name');
+                                                echo empty($teamNames) ? 'Keine Teams' : implode(', ', $teamNames);
+                                            }
+                                            ?>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             <a href="users.php?action=edit&user_id=<?= $user['id'] ?>" class="text-orange-600 hover:text-orange-900 mr-3" title="Bearbeiten">
@@ -283,20 +300,7 @@ $csrf_token = generateCSRFToken();
                 </div>
             </div>
         <?php endif; ?>
-                        
-                        <?php if (!empty($selectedTeamId)): ?>
-    <div class="flex space-x-2">
-        <a href="players.php?team_id=<?= $selectedTeamId ?>" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">
-            <i class="fas fa-user-plus mr-2"></i>Spieler verwalten
-        </a>
-        <a href="export.php?team_id=<?= $selectedTeamId ?>&format=print" class="bg-green-500 text-white p-2 rounded hover:bg-green-600">
-            <i class="fas fa-print mr-2"></i>Drucken
-        </a>
-        <a href="export.php?team_id=<?= $selectedTeamId ?>&format=csv" class="bg-orange-500 text-white p-2 rounded hover:bg-orange-600">
-            <i class="fas fa-file-csv mr-2"></i>CSV
-        </a>
-        <a href="team_qrcode.php?team_id=<?= $selectedTeamId ?>" class="bg-purple-500 text-white p-2 rounded hover:bg-purple-600">
-            <i class="fas fa-qrcode mr-2"></i>QR-Code
-        </a>
     </div>
-<?php endif; ?>
+</div>
+
+<?php require_once 'templates/footer.php'; ?>
