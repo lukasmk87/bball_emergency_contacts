@@ -327,3 +327,103 @@ function ensureQRCodeTablesExist() {
 
 // Diese Funktion aufrufen, um sicherzustellen, dass die Tabellen existieren
 ensureQRCodeTablesExist();
+
+// Add this to the end of the functions.php file
+
+/**
+ * Ensures that the player registration tables exist
+ */
+function ensurePlayerRegistrationTablesExist() {
+    // Tabelle für Spielerregistrierung erstellen, falls sie noch nicht existiert
+    $sql = "CREATE TABLE IF NOT EXISTS player_registration_links (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        team_id INT NOT NULL,
+        user_id INT NOT NULL,
+        registration_key VARCHAR(64) NOT NULL UNIQUE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        expires_at TIMESTAMP NULL,
+        is_active TINYINT(1) DEFAULT 1,
+        FOREIGN KEY (team_id) REFERENCES teams(id) ON DELETE CASCADE,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        INDEX (registration_key),
+        INDEX (is_active)
+    )";
+    
+    db()->execute($sql);
+}
+
+/**
+ * Generiert oder gibt einen bestehenden Registrierungslink für ein Team zurück
+ *
+ * @param int $teamId Die Team-ID
+ * @param int $userId Die Benutzer-ID des Trainers
+ * @param bool $forceNew Erzwingt die Erstellung eines neuen Schlüssels
+ * @return string Der Registrierungslink
+ */
+function getOrCreatePlayerRegistrationKey($teamId, $userId, $forceNew = false) {
+    // Prüfen, ob bereits ein Registrierungslink für dieses Team existiert
+    $registrationKey = db()->fetchOne(
+        "SELECT registration_key FROM player_registration_links WHERE team_id = ? AND is_active = 1",
+        [$teamId]
+    );
+    
+    if ($registrationKey && !$forceNew) {
+        return $registrationKey['registration_key'];
+    }
+    
+    // Alte Schlüssel deaktivieren, wenn ein neuer erzwungen wird
+    if ($forceNew) {
+        invalidatePlayerRegistrationKey($teamId);
+    }
+    
+    // Neuen eindeutigen Registrierungsschlüssel generieren
+    $newKey = bin2hex(random_bytes(16));
+    
+    // Schlüssel in der Datenbank speichern
+    db()->insert(
+        "INSERT INTO player_registration_links (team_id, user_id, registration_key, created_at, expires_at, is_active) 
+         VALUES (?, ?, ?, NOW(), DATE_ADD(NOW(), INTERVAL 30 DAY), 1)",
+        [$teamId, $userId, $newKey]
+    );
+    
+    return $newKey;
+}
+
+/**
+ * Deaktiviert alle aktiven Registrierungslinks für ein Team
+ *
+ * @param int $teamId Die Team-ID
+ * @return bool True, wenn erfolgreich
+ */
+function invalidatePlayerRegistrationKey($teamId) {
+    return db()->execute(
+        "UPDATE player_registration_links SET is_active = 0 WHERE team_id = ? AND is_active = 1",
+        [$teamId]
+    );
+}
+
+/**
+ * Ruft Team-Informationen basierend auf einem Registrierungsschlüssel ab
+ *
+ * @param string $registrationKey Der Registrierungsschlüssel
+ * @return array|false Team-Informationen oder false bei ungültigem Schlüssel
+ */
+function getTeamByRegistrationKey($registrationKey) {
+    if (empty($registrationKey)) {
+        return false;
+    }
+    
+    // Überprüfen, ob der Schlüssel gültig und aktiv ist
+    $teamInfo = db()->fetchOne(
+        "SELECT t.id, t.name, t.category, prl.user_id 
+         FROM player_registration_links prl
+         JOIN teams t ON prl.team_id = t.id
+         WHERE prl.registration_key = ? AND prl.is_active = 1 AND prl.expires_at > NOW()",
+        [$registrationKey]
+    );
+    
+    return $teamInfo;
+}
+
+// Diese Funktion aufrufen, um sicherzustellen, dass die Tabellen existieren
+ensurePlayerRegistrationTablesExist();
