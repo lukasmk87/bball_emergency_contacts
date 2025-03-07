@@ -98,12 +98,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $csrf_token = generateCSRFToken();
 ?>
 
-<div class="container mx-auto px-4 py-6">
+<div class="container mx-auto px-2 sm:px-4 py-4 sm:py-6">
     <div class="max-w-3xl mx-auto">
-        <h2 class="text-2xl font-bold mb-6">Mein Profil</h2>
+        <h2 class="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Mein Profil</h2>
 
         <?php if (!empty($errors)): ?>
-            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6">
+            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 sm:mb-6">
                 <ul class="list-disc pl-4">
                     <?php foreach ($errors as $error): ?>
                         <li><?= e($error) ?></li>
@@ -112,50 +112,50 @@ $csrf_token = generateCSRFToken();
             </div>
         <?php endif; ?>
 
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <form method="POST" action="profile.php" class="space-y-6">
+        <div class="bg-white rounded-lg shadow-md p-4 sm:p-6">
+            <form method="POST" action="profile.php" class="space-y-4 sm:space-y-6">
                 <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
 
                 <div>
-                    <label for="name" class="block text-gray-700 mb-2">Name</label>
+                    <label for="name" class="block text-gray-700 mb-1 sm:mb-2 text-sm sm:text-base">Name</label>
                     <input type="text" id="name" name="name" value="<?= e($user['name']) ?>" 
-                        class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-800" required>
+                        class="w-full p-2 sm:p-3 border rounded focus:outline-none focus:ring-2 focus:ring-orange-500" required>
                 </div>
 
                 <div>
-                    <label for="email" class="block text-gray-700 mb-2">E-Mail</label>
+                    <label for="email" class="block text-gray-700 mb-1 sm:mb-2 text-sm sm:text-base">E-Mail</label>
                     <input type="email" id="email" name="email" value="<?= e($user['email']) ?>" 
-                        class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-800" required>
+                        class="w-full p-2 sm:p-3 border rounded focus:outline-none focus:ring-2 focus:ring-orange-500" required>
                 </div>
 
-                <hr class="my-6">
+                <hr class="my-4 sm:my-6 border-gray-600">
                 
-                <h3 class="text-lg font-semibold mb-4">Passwort ändern (optional)</h3>
+                <h3 class="text-lg font-semibold mb-3 sm:mb-4">Passwort ändern (optional)</h3>
 
                 <div>
-                    <label for="current_password" class="block text-gray-700 mb-2">Aktuelles Passwort</label>
+                    <label for="current_password" class="block text-gray-700 mb-1 sm:mb-2 text-sm sm:text-base">Aktuelles Passwort</label>
                     <input type="password" id="current_password" name="current_password" 
-                        class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-800">
+                        class="w-full p-2 sm:p-3 border rounded focus:outline-none focus:ring-2 focus:ring-orange-500">
                 </div>
 
                 <div>
-                    <label for="new_password" class="block text-gray-700 mb-2">Neues Passwort</label>
+                    <label for="new_password" class="block text-gray-700 mb-1 sm:mb-2 text-sm sm:text-base">Neues Passwort</label>
                     <input type="password" id="new_password" name="new_password" 
-                        class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-800">
-                    <p class="text-sm text-gray-500 mt-1">Mindestens 8 Zeichen</p>
+                        class="w-full p-2 sm:p-3 border rounded focus:outline-none focus:ring-2 focus:ring-orange-500">
+                    <p class="text-xs sm:text-sm text-gray-500 mt-1">Mindestens 8 Zeichen</p>
                 </div>
 
                 <div>
-                    <label for="confirm_password" class="block text-gray-700 mb-2">Passwort bestätigen</label>
+                    <label for="confirm_password" class="block text-gray-700 mb-1 sm:mb-2 text-sm sm:text-base">Passwort bestätigen</label>
                     <input type="password" id="confirm_password" name="confirm_password" 
-                        class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-800">
+                        class="w-full p-2 sm:p-3 border rounded focus:outline-none focus:ring-2 focus:ring-orange-500">
                 </div>
 
-                <div class="flex justify-between pt-4">
-                    <a href="dashboard.php" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400">
+                <div class="flex flex-col sm:flex-row justify-between pt-4 gap-3">
+                    <a href="dashboard.php" class="flex items-center justify-center bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 w-full sm:w-auto">
                         Zurück zum Dashboard
                     </a>
-                    <button type="submit" class="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600">
+                    <button type="submit" class="flex items-center justify-center bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 w-full sm:w-auto">
                         Profil speichern
                     </button>
                 </div>

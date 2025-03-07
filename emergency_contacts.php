@@ -154,26 +154,26 @@ $contacts = getEmergencyContactsForPlayer($playerId);
 $csrf_token = generateCSRFToken();
 ?>
 
-<div class="container mx-auto px-4 py-6">
-    <div class="flex justify-between items-center mb-6">
-        <div>
-            <h2 class="text-2xl font-bold">Notfallkontakte: <?= e($player['first_name']) ?> <?= e($player['last_name']) ?></h2>
-            <p class="text-gray-600">Team: <?= e($player['team_name']) ?></p>
+<div class="container mx-auto px-2 sm:px-4 py-4 sm:py-6">
+    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 sm:mb-6">
+        <div class="mb-3 sm:mb-0">
+            <h2 class="text-xl sm:text-2xl font-bold">Notfallkontakte: <?= e($player['first_name']) ?> <?= e($player['last_name']) ?></h2>
+            <p class="text-gray-600 text-sm">Team: <?= e($player['team_name']) ?></p>
         </div>
-        <div>
-            <a href="players.php?team_id=<?= $teamId ?>" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 mr-2">
+        <div class="flex flex-col sm:flex-row gap-2">
+            <a href="players.php?team_id=<?= $teamId ?>" class="flex items-center justify-center bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 w-full sm:w-auto">
                 <i class="fas fa-arrow-left mr-2"></i>Zurück zu Spielern
             </a>
-            <a href="emergency_contacts.php?player_id=<?= $playerId ?>&action=new" class="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600">
+            <a href="emergency_contacts.php?player_id=<?= $playerId ?>&action=new" class="flex items-center justify-center bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 w-full sm:w-auto">
                 <i class="fas fa-plus mr-2"></i>Neuer Kontakt
             </a>
         </div>
     </div>
     
     <?php if ($action === 'edit' || $action === 'new'): ?>
-    <!-- Kontakt-Formular -->
-    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-        <h3 class="text-xl font-bold mb-4"><?= $action === 'edit' ? 'Notfallkontakt bearbeiten' : 'Neuen Notfallkontakt hinzufügen' ?></h3>
+    <!-- Kontakt-Formular - Mobile-optimiert -->
+    <div class="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-6">
+        <h3 class="text-lg sm:text-xl font-bold mb-4"><?= $action === 'edit' ? 'Notfallkontakt bearbeiten' : 'Neuen Notfallkontakt hinzufügen' ?></h3>
         
         <?php if (!empty($errors)): ?>
             <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4">
@@ -189,7 +189,7 @@ $csrf_token = generateCSRFToken();
             <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
             <input type="hidden" name="contact_id" value="<?= $formData['id'] ?>">
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 <div>
                     <label for="contact_name" class="block text-gray-700 mb-2">Name des Kontakts</label>
                     <input type="text" id="contact_name" name="contact_name" value="<?= e($formData['contact_name']) ?>" 
@@ -198,11 +198,11 @@ $csrf_token = generateCSRFToken();
                 
                 <div>
                     <label for="phone_number" class="block text-gray-700 mb-2">Telefonnummer</label>
-                    <input type="text" id="phone_number" name="phone_number" value="<?= e($formData['phone_number']) ?>" 
+                    <input type="tel" id="phone_number" name="phone_number" value="<?= e($formData['phone_number']) ?>" 
                         class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-orange-500" required>
                 </div>
                 
-                <div>
+                <div class="sm:col-span-2">
                     <label for="relationship" class="block text-gray-700 mb-2">Beziehung zum Spieler</label>
                     <select id="relationship" name="relationship" 
                         class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-orange-500" required>
@@ -219,11 +219,11 @@ $csrf_token = generateCSRFToken();
                 </div>
             </div>
             
-            <div class="flex justify-between mt-6">
-                <a href="emergency_contacts.php?player_id=<?= $playerId ?>" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400">
+            <div class="flex flex-col sm:flex-row justify-between mt-6 gap-2">
+                <a href="emergency_contacts.php?player_id=<?= $playerId ?>" class="flex items-center justify-center bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 w-full sm:w-auto">
                     Abbrechen
                 </a>
-                <button type="submit" class="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600">
+                <button type="submit" class="flex items-center justify-center bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 w-full sm:w-auto">
                     <?= $action === 'edit' ? 'Kontakt aktualisieren' : 'Kontakt hinzufügen' ?>
                 </button>
             </div>
@@ -231,52 +231,84 @@ $csrf_token = generateCSRFToken();
     </div>
     <?php endif; ?>
     
-    <!-- Kontakte-Tabelle -->
-    <div class="bg-white rounded-lg shadow-md overflow-hidden">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Telefonnummer</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Beziehung</th>
-                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aktionen</th>
-                </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-                <?php if (empty($contacts)): ?>
-                    <tr>
-                        <td colspan="4" class="px-6 py-4 text-center text-gray-500">Keine Notfallkontakte vorhanden</td>
-                    </tr>
-                <?php else: ?>
-                    <?php foreach ($contacts as $contact): ?>
+    <!-- Mobile-optimierte Kontakte-Liste -->
+    <?php if (empty($contacts)): ?>
+        <div class="bg-white rounded-lg shadow-md p-4 text-center text-gray-500">
+            Keine Notfallkontakte vorhanden
+        </div>
+    <?php else: ?>
+        <!-- Card Layout für Mobilgeräte -->
+        <div class="block sm:hidden space-y-4">
+            <?php foreach ($contacts as $contact): ?>
+                <div class="bg-white rounded-lg shadow-md p-4">
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <h3 class="font-medium text-lg"><?= e($contact['contact_name']) ?></h3>
+                            <p class="text-sm text-gray-600"><?= e($contact['relationship']) ?></p>
+                        </div>
+                        <div class="flex gap-3">
+                            <a href="emergency_contacts.php?player_id=<?= $playerId ?>&action=edit&contact_id=<?= $contact['id'] ?>" 
+                               class="text-orange-600 hover:text-orange-900">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="emergency_contacts.php?player_id=<?= $playerId ?>&action=delete&contact_id=<?= $contact['id'] ?>&token=<?= $csrf_token ?>" 
+                               class="text-red-600 hover:text-red-900 delete-confirm">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <a href="tel:<?= e($contact['phone_number']) ?>" class="inline-flex items-center justify-center w-full bg-orange-100 text-orange-800 p-3 rounded-lg mt-2 hover:bg-orange-200">
+                        <i class="fas fa-phone-alt mr-2"></i>
+                        <?= e($contact['phone_number']) ?>
+                    </a>
+                </div>
+            <?php endforeach; ?>
+        </div>
+        
+        <!-- Tabelle für Desktop -->
+        <div class="hidden sm:block bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
                         <tr>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm font-medium text-gray-900"><?= e($contact['contact_name']) ?></div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <a href="tel:<?= e($contact['phone_number']) ?>" class="text-sm text-orange-600 hover:text-orange-900">
-                                    <?= e($contact['phone_number']) ?>
-                                </a>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                <?= e($contact['relationship']) ?>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <a href="emergency_contacts.php?player_id=<?= $playerId ?>&action=edit&contact_id=<?= $contact['id'] ?>" 
-                                   class="text-orange-600 hover:text-orange-900 mr-3">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <a href="emergency_contacts.php?player_id=<?= $playerId ?>&action=delete&contact_id=<?= $contact['id'] ?>&token=<?= $csrf_token ?>" 
-                                   class="text-red-600 hover:text-red-900 delete-confirm">
-                                    <i class="fas fa-trash"></i>
-                                </a>
-                            </td>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Telefonnummer</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Beziehung</th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aktionen</th>
                         </tr>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-            </tbody>
-        </table>
-    </div>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <?php foreach ($contacts as $contact): ?>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium text-gray-900"><?= e($contact['contact_name']) ?></div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <a href="tel:<?= e($contact['phone_number']) ?>" class="text-sm text-orange-600 hover:text-orange-900">
+                                        <?= e($contact['phone_number']) ?>
+                                    </a>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <?= e($contact['relationship']) ?>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <a href="emergency_contacts.php?player_id=<?= $playerId ?>&action=edit&contact_id=<?= $contact['id'] ?>" 
+                                       class="text-orange-600 hover:text-orange-900 mr-3">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="emergency_contacts.php?player_id=<?= $playerId ?>&action=delete&contact_id=<?= $contact['id'] ?>&token=<?= $csrf_token ?>" 
+                                       class="text-red-600 hover:text-red-900 delete-confirm">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    <?php endif; ?>
 </div>
 
 <?php require_once 'templates/footer.php'; ?>

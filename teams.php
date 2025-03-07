@@ -140,26 +140,26 @@ $coaches = db()->fetchAll("
 $csrf_token = generateCSRFToken();
 ?>
 
-<div class="container mx-auto px-4 py-6">
-    <div class="flex justify-between items-center mb-6">
-        <div>
-            <h2 class="text-2xl font-bold">Teamverwaltung</h2>
-            <p class="text-gray-600">Verwalten Sie alle Teams</p>
+<div class="container mx-auto px-2 sm:px-4 py-4 sm:py-6">
+    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 sm:mb-6">
+        <div class="mb-3 sm:mb-0">
+            <h2 class="text-xl sm:text-2xl font-bold">Teamverwaltung</h2>
+            <p class="text-gray-600 text-sm sm:text-base">Verwalten Sie alle Teams</p>
         </div>
-        <div>
-            <a href="dashboard.php" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 mr-2">
+        <div class="flex flex-col sm:flex-row gap-2">
+            <a href="dashboard.php" class="flex items-center justify-center bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 w-full sm:w-auto">
                 <i class="fas fa-arrow-left mr-2"></i>Zurück zum Dashboard
             </a>
-            <a href="teams.php?action=new" class="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600">
+            <a href="teams.php?action=new" class="flex items-center justify-center bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 w-full sm:w-auto">
                 <i class="fas fa-plus mr-2"></i>Neues Team
             </a>
         </div>
     </div>
     
     <?php if ($action === 'edit' || $action === 'new'): ?>
-    <!-- Team-Formular -->
-    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-        <h3 class="text-xl font-bold mb-4"><?= $action === 'edit' ? 'Team bearbeiten' : 'Neues Team hinzufügen' ?></h3>
+    <!-- Team-Formular - Mobile-optimiert -->
+    <div class="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-6">
+        <h3 class="text-lg sm:text-xl font-bold mb-4"><?= $action === 'edit' ? 'Team bearbeiten' : 'Neues Team hinzufügen' ?></h3>
         
         <?php if (!empty($errors)): ?>
             <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4">
@@ -175,17 +175,17 @@ $csrf_token = generateCSRFToken();
             <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
             <input type="hidden" name="team_id" value="<?= $formData['id'] ?>">
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 <div>
-                    <label for="name" class="block text-gray-700 mb-2">Teamname</label>
+                    <label for="name" class="block text-gray-700 mb-2 text-sm sm:text-base">Teamname</label>
                     <input type="text" id="name" name="name" value="<?= e($formData['name']) ?>" 
-                        class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-800" required>
+                        class="w-full p-2 sm:p-3 border rounded focus:outline-none focus:ring-2 focus:ring-orange-500" required>
                 </div>
                 
                 <div>
-                    <label for="category" class="block text-gray-700 mb-2">Kategorie</label>
+                    <label for="category" class="block text-gray-700 mb-2 text-sm sm:text-base">Kategorie</label>
                     <select id="category" name="category" 
-                        class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-800" required>
+                        class="w-full p-2 sm:p-3 border rounded focus:outline-none focus:ring-2 focus:ring-orange-500" required>
                         <option value="" <?= empty($formData['category']) ? 'selected' : '' ?>>Bitte wählen</option>
                         <option value="Jugend" <?= $formData['category'] === 'Jugend' ? 'selected' : '' ?>>Jugend</option>
                         <option value="Senioren" <?= $formData['category'] === 'Senioren' ? 'selected' : '' ?>>Senioren</option>
@@ -195,10 +195,10 @@ $csrf_token = generateCSRFToken();
                     </select>
                 </div>
                 
-                <div>
-                    <label for="coach_id" class="block text-gray-700 mb-2">Trainer</label>
+                <div class="sm:col-span-2">
+                    <label for="coach_id" class="block text-gray-700 mb-2 text-sm sm:text-base">Trainer</label>
                     <select id="coach_id" name="coach_id" 
-                        class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-800">
+                        class="w-full p-2 sm:p-3 border rounded focus:outline-none focus:ring-2 focus:ring-orange-500">
                         <option value="">Kein Trainer zugewiesen</option>
                         <?php foreach ($coaches as $coach): ?>
                             <option value="<?= $coach['id'] ?>" <?= $formData['coach_id'] == $coach['id'] ? 'selected' : '' ?>>
@@ -209,11 +209,11 @@ $csrf_token = generateCSRFToken();
                 </div>
             </div>
             
-            <div class="flex justify-between mt-6">
-                <a href="teams.php" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400">
+            <div class="flex flex-col sm:flex-row justify-between mt-6 gap-2">
+                <a href="teams.php" class="flex items-center justify-center bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 w-full sm:w-auto">
                     Abbrechen
                 </a>
-                <button type="submit" class="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600">
+                <button type="submit" class="flex items-center justify-center bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 w-full sm:w-auto">
                     <?= $action === 'edit' ? 'Team aktualisieren' : 'Team hinzufügen' ?>
                 </button>
             </div>
@@ -221,59 +221,103 @@ $csrf_token = generateCSRFToken();
     </div>
     <?php endif; ?>
     
-    <!-- Teams-Tabelle -->
-    <div class="bg-white rounded-lg shadow-md overflow-hidden">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Teamname</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kategorie</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Spieleranzahl</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trainer</th>
-                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aktionen</th>
-                </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-                <?php if (empty($teams)): ?>
-                    <tr>
-                        <td colspan="5" class="px-6 py-4 text-center text-gray-500">Keine Teams vorhanden</td>
-                    </tr>
-                <?php else: ?>
-                    <?php foreach ($teams as $team): ?>
+    <!-- Mobile-optimierte Team-Liste -->
+    <?php if (empty($teams)): ?>
+        <div class="bg-white rounded-lg shadow-md p-4 text-center text-gray-500">
+            Keine Teams vorhanden
+        </div>
+    <?php else: ?>
+        <!-- Card Layout für Mobilgeräte -->
+        <div class="block sm:hidden space-y-4">
+            <?php foreach ($teams as $team): ?>
+                <div class="bg-white rounded-lg shadow-md p-4">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="font-medium text-lg"><?= e($team['name']) ?></h3>
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                            <?= e($team['category']) ?>
+                        </span>
+                    </div>
+                    
+                    <div class="mt-2 space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Spieleranzahl:</span>
+                            <span><?= (int)$team['player_count'] ?></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Trainer:</span>
+                            <span><?= e($team['coach_name'] ?? 'Nicht zugewiesen') ?></span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-end mt-4 gap-3">
+                        <a href="team_users.php?team_id=<?= $team['id'] ?>" class="text-blue-600 hover:text-blue-900" title="Benutzer verwalten">
+                            <i class="fas fa-users"></i>
+                        </a>
+                        <a href="players.php?team_id=<?= $team['id'] ?>" class="text-green-600 hover:text-green-900" title="Spieler verwalten">
+                            <i class="fas fa-basketball-ball"></i>
+                        </a>
+                        <a href="teams.php?action=edit&team_id=<?= $team['id'] ?>" class="text-orange-600 hover:text-orange-900" title="Bearbeiten">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="teams.php?action=delete&team_id=<?= $team['id'] ?>&token=<?= $csrf_token ?>" 
+                           class="text-red-600 hover:text-red-900 delete-confirm" title="Löschen">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+        
+        <!-- Tabelle für Desktop -->
+        <div class="hidden sm:block bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
                         <tr>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm font-medium text-gray-900"><?= e($team['name']) ?></div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                <?= e($team['category']) ?>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                <?= (int)$team['player_count'] ?>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900"><?= e($team['coach_name'] ?? 'Nicht zugewiesen') ?></div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <a href="team_users.php?team_id=<?= $team['id'] ?>" class="text-blue-600 hover:text-blue-900 mr-3" title="Benutzer verwalten">
-                                    <i class="fas fa-users"></i>
-                                </a>
-                                <a href="players.php?team_id=<?= $team['id'] ?>" class="text-green-600 hover:text-green-900 mr-3" title="Spieler verwalten">
-                                    <i class="fas fa-basketball-ball"></i>
-                                </a>
-                                <a href="teams.php?action=edit&team_id=<?= $team['id'] ?>" class="text-orange-600 hover:text-orange-900 mr-3" title="Bearbeiten">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <a href="teams.php?action=delete&team_id=<?= $team['id'] ?>&token=<?= $csrf_token ?>" 
-                                   class="text-red-600 hover:text-red-900 delete-confirm" title="Löschen">
-                                    <i class="fas fa-trash"></i>
-                                </a>
-                            </td>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Teamname</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kategorie</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Spieleranzahl</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trainer</th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aktionen</th>
                         </tr>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-            </tbody>
-        </table>
-    </div>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <?php foreach ($teams as $team): ?>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium text-gray-900"><?= e($team['name']) ?></div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <?= e($team['category']) ?>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <?= (int)$team['player_count'] ?>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900"><?= e($team['coach_name'] ?? 'Nicht zugewiesen') ?></div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <a href="team_users.php?team_id=<?= $team['id'] ?>" class="text-blue-600 hover:text-blue-900 mr-3" title="Benutzer verwalten">
+                                        <i class="fas fa-users"></i>
+                                    </a>
+                                    <a href="players.php?team_id=<?= $team['id'] ?>" class="text-green-600 hover:text-green-900 mr-3" title="Spieler verwalten">
+                                        <i class="fas fa-basketball-ball"></i>
+                                    </a>
+                                    <a href="teams.php?action=edit&team_id=<?= $team['id'] ?>" class="text-orange-600 hover:text-orange-900 mr-3" title="Bearbeiten">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="teams.php?action=delete&team_id=<?= $team['id'] ?>&token=<?= $csrf_token ?>" 
+                                       class="text-red-600 hover:text-red-900 delete-confirm" title="Löschen">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    <?php endif; ?>
 </div>
 
 <?php require_once 'templates/footer.php'; ?>

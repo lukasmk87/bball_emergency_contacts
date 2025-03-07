@@ -137,7 +137,7 @@ function sanitizeFilename($filename) {
     return $filename;
 }
 
-// Hilfsfunktion: Druckbare HTML-Seite generieren
+// Hilfsfunktion: Mobile-freundliche druckbare HTML-Seite generieren
 function generatePrintableHTML($teamName, $playerContacts, $forPDF = false) {
     $html = '<!DOCTYPE html>
 <html lang="de">
@@ -156,34 +156,70 @@ function generatePrintableHTML($teamName, $playerContacts, $forPDF = false) {
             th { background-color: #f2f2f2; }
         }
         .print-header { text-align: center; margin-bottom: 20px; }
+        
+        /* Mobile-friendly styles */
+        .table-container {
+            overflow-x: auto;
+            width: 100%;
+        }
+        
+        /* Dark mode styles for better readability */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #121212;
+                color: #e0e0e0;
+            }
+            
+            table, th, td {
+                border-color: #333;
+            }
+            
+            th {
+                background-color: #262626;
+            }
+            
+            a {
+                color: #ff9800;
+            }
+            
+            button {
+                background-color: #e65100;
+                color: white;
+            }
+            
+            button:hover {
+                background-color: #ff6d00;
+            }
+        }
     </style>
 </head>
-<body class="bg-white p-8">
-    <div class="no-print mb-4 flex justify-between items-center">
-        <button onclick="window.print()" class="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600">
+<body class="bg-white p-4 sm:p-8">
+    <div class="no-print flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-3">
+        <button onclick="window.print()" class="bg-orange-500 w-full sm:w-auto text-white px-4 py-2 rounded hover:bg-orange-600 flex items-center justify-center">
             <i class="fas fa-print mr-2"></i>Drucken
         </button>
-        <a href="dashboard.php?team_id=' . urlencode((int)$_GET['team_id']) . '" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400">
+        <a href="dashboard.php?team_id=' . urlencode((int)$_GET['team_id']) . '" class="bg-gray-300 w-full sm:w-auto text-center text-gray-800 px-4 py-2 rounded hover:bg-gray-400 flex items-center justify-center">
             <i class="fas fa-arrow-left mr-2"></i>Zurück zum Dashboard
         </a>
     </div>
     
     <div class="print-header">
-        <h1 class="text-2xl font-bold">Notfallkontakte: ' . htmlspecialchars($teamName) . '</h1>
-        <p>Stand: ' . date('d.m.Y H:i') . ' Uhr</p>
+        <h1 class="text-xl sm:text-2xl font-bold">Notfallkontakte: ' . htmlspecialchars($teamName) . '</h1>
+        <p class="text-sm sm:text-base">Stand: ' . date('d.m.Y H:i') . ' Uhr</p>
     </div>
     
-    <table class="min-w-full border">
-        <thead>
-            <tr>
-                <th class="border px-4 py-2">Spieler</th>
-                <th class="border px-4 py-2">Position</th>
-                <th class="border px-4 py-2">Notfallkontakt</th>
-                <th class="border px-4 py-2">Telefonnummer</th>
-                <th class="border px-4 py-2">Beziehung</th>
-            </tr>
-        </thead>
-        <tbody>';
+    <div class="table-container">
+        <table class="min-w-full border">
+            <thead>
+                <tr>
+                    <th class="border px-4 py-2">Spieler</th>
+                    <th class="border px-4 py-2">Position</th>
+                    <th class="border px-4 py-2">Notfallkontakt</th>
+                    <th class="border px-4 py-2">Telefonnummer</th>
+                    <th class="border px-4 py-2">Beziehung</th>
+                </tr>
+            </thead>
+            <tbody>';
 
     foreach ($playerContacts as $data) {
         $player = $data['player'];
@@ -221,11 +257,14 @@ function generatePrintableHTML($teamName, $playerContacts, $forPDF = false) {
     
     $html .= '</tbody>
     </table>
+    </div>
     
     <div class="mt-8 text-sm text-gray-600 print-footer">
         <p>Diese Liste enthält vertrauliche Daten und darf nur für Notfälle verwendet werden.</p>
         <p>Generiert durch ' . htmlspecialchars(APP_NAME) . ' am ' . date('d.m.Y') . '.</p>
     </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
 </body>
 </html>';
 

@@ -174,26 +174,26 @@ $users = db()->fetchAll("
 $csrf_token = generateCSRFToken();
 ?>
 
-<div class="container mx-auto px-4 py-6">
-    <div class="flex justify-between items-center mb-6">
-        <div>
-            <h2 class="text-2xl font-bold">Benutzerverwaltung</h2>
-            <p class="text-gray-600">Verwalten Sie alle Benutzer des Systems</p>
+<div class="container mx-auto px-2 sm:px-4 py-4 sm:py-6">
+    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 sm:mb-6">
+        <div class="mb-3 sm:mb-0">
+            <h2 class="text-xl sm:text-2xl font-bold">Benutzerverwaltung</h2>
+            <p class="text-gray-600 text-sm sm:text-base">Verwalten Sie alle Benutzer des Systems</p>
         </div>
-        <div>
-            <a href="dashboard.php" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 mr-2">
+        <div class="flex flex-col sm:flex-row gap-2">
+            <a href="dashboard.php" class="flex items-center justify-center bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 w-full sm:w-auto">
                 <i class="fas fa-arrow-left mr-2"></i>Zurück zum Dashboard
             </a>
-            <a href="users.php?action=new" class="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600">
+            <a href="users.php?action=new" class="flex items-center justify-center bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 w-full sm:w-auto">
                 <i class="fas fa-plus mr-2"></i>Neuer Benutzer
             </a>
         </div>
     </div>
     
     <?php if ($action === 'edit' || $action === 'new'): ?>
-    <!-- Benutzer-Formular -->
-    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-        <h3 class="text-xl font-bold mb-4"><?= $action === 'edit' ? 'Benutzer bearbeiten' : 'Neuen Benutzer hinzufügen' ?></h3>
+    <!-- Benutzer-Formular - Mobile-optimiert -->
+    <div class="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-6">
+        <h3 class="text-lg sm:text-xl font-bold mb-4"><?= $action === 'edit' ? 'Benutzer bearbeiten' : 'Neuen Benutzer hinzufügen' ?></h3>
         
         <?php if (!empty($errors)): ?>
             <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4">
@@ -209,31 +209,31 @@ $csrf_token = generateCSRFToken();
             <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
             <input type="hidden" name="user_id" value="<?= $formData['id'] ?>">
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label for="name" class="block text-gray-700 mb-2">Name</label>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                <div class="sm:col-span-2">
+                    <label for="name" class="block text-gray-700 mb-2 text-sm sm:text-base">Name</label>
                     <input type="text" id="name" name="name" value="<?= e($formData['name']) ?>" 
-                        class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-800" required>
+                        class="w-full p-2 sm:p-3 border rounded focus:outline-none focus:ring-2 focus:ring-orange-500" required>
                 </div>
                 
-                <div>
-                    <label for="email" class="block text-gray-700 mb-2">E-Mail</label>
+                <div class="sm:col-span-2">
+                    <label for="email" class="block text-gray-700 mb-2 text-sm sm:text-base">E-Mail</label>
                     <input type="email" id="email" name="email" value="<?= e($formData['email']) ?>" 
-                        class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-800" required>
+                        class="w-full p-2 sm:p-3 border rounded focus:outline-none focus:ring-2 focus:ring-orange-500" required>
                 </div>
                 
-                <div>
-                    <label for="role" class="block text-gray-700 mb-2">Rolle</label>
+                <div class="sm:col-span-2">
+                    <label for="role" class="block text-gray-700 mb-2 text-sm sm:text-base">Rolle</label>
                     <select id="role" name="role" 
-                        class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-800" required>
+                        class="w-full p-2 sm:p-3 border rounded focus:outline-none focus:ring-2 focus:ring-orange-500" required>
                         <option value="trainer" <?= $formData['role'] === 'trainer' ? 'selected' : '' ?>>Trainer</option>
                         <option value="manager" <?= $formData['role'] === 'manager' ? 'selected' : '' ?>>Manager</option>
                         <option value="admin" <?= $formData['role'] === 'admin' ? 'selected' : '' ?>>Administrator</option>
                     </select>
                 </div>
                 
-                <div class="col-span-2">
-                    <h4 class="font-medium mb-2"><?= $action === 'edit' ? 'Passwort ändern (optional)' : 'Passwort' ?></h4>
+                <div class="sm:col-span-2 mt-2">
+                    <h4 class="font-medium mb-2 text-sm sm:text-base"><?= $action === 'edit' ? 'Passwort ändern (optional)' : 'Passwort' ?></h4>
                     <p class="text-sm text-gray-600 mb-2">
                         <?= $action === 'edit' 
                             ? 'Lassen Sie diese Felder leer, wenn Sie das Passwort nicht ändern möchten.' 
@@ -242,26 +242,26 @@ $csrf_token = generateCSRFToken();
                 </div>
                 
                 <div>
-                    <label for="password" class="block text-gray-700 mb-2">Passwort</label>
+                    <label for="password" class="block text-gray-700 mb-2 text-sm sm:text-base">Passwort</label>
                     <input type="password" id="password" name="password" 
-                        class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-800"
+                        class="w-full p-2 sm:p-3 border rounded focus:outline-none focus:ring-2 focus:ring-orange-500"
                         <?= $action === 'new' ? 'required' : '' ?>>
-                    <p class="text-sm text-gray-500 mt-1">Mindestens 8 Zeichen</p>
+                    <p class="text-xs text-gray-500 mt-1">Mindestens 8 Zeichen</p>
                 </div>
                 
                 <div>
-                    <label for="confirm_password" class="block text-gray-700 mb-2">Passwort bestätigen</label>
+                    <label for="confirm_password" class="block text-gray-700 mb-2 text-sm sm:text-base">Passwort bestätigen</label>
                     <input type="password" id="confirm_password" name="confirm_password" 
-                        class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-800"
+                        class="w-full p-2 sm:p-3 border rounded focus:outline-none focus:ring-2 focus:ring-orange-500"
                         <?= $action === 'new' ? 'required' : '' ?>>
                 </div>
             </div>
             
-            <div class="flex justify-between mt-6">
-                <a href="users.php" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400">
+            <div class="flex flex-col sm:flex-row justify-between mt-6 gap-2">
+                <a href="users.php" class="flex items-center justify-center bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 w-full sm:w-auto">
                     Abbrechen
                 </a>
-                <button type="submit" class="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600">
+                <button type="submit" class="flex items-center justify-center bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 w-full sm:w-auto">
                     <?= $action === 'edit' ? 'Benutzer aktualisieren' : 'Benutzer hinzufügen' ?>
                 </button>
             </div>
@@ -269,78 +269,129 @@ $csrf_token = generateCSRFToken();
     </div>
     <?php endif; ?>
     
-    <!-- Benutzer-Tabelle -->
-    <div class="bg-white rounded-lg shadow-md overflow-hidden">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">E-Mail</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rolle</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Team-Zugang</th>
-                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aktionen</th>
-                </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-                <?php if (empty($users)): ?>
-                    <tr>
-                        <td colspan="5" class="px-6 py-4 text-center text-gray-500">Keine Benutzer vorhanden</td>
-                    </tr>
-                <?php else: ?>
-                    <?php foreach ($users as $user): ?>
+    <!-- Mobile-optimierte Benutzer-Liste -->
+    <?php if (empty($users)): ?>
+        <div class="bg-white rounded-lg shadow-md p-4 text-center text-gray-500">
+            Keine Benutzer vorhanden
+        </div>
+    <?php else: ?>
+        <!-- Card Layout für Mobilgeräte -->
+        <div class="block sm:hidden space-y-4">
+            <?php foreach ($users as $user): ?>
+                <div class="bg-white rounded-lg shadow-md p-4">
+                    <div class="flex items-center mb-3">
+                        <div class="h-12 w-12 bg-orange-200 rounded-full flex items-center justify-center mr-3">
+                            <i class="fas fa-user text-orange-600"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-medium text-lg"><?= e($user['name']) ?></h3>
+                            <p class="text-sm text-gray-600"><?= e($user['email']) ?></p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
+                            <?php 
+                            if ($user['role'] === 'admin') echo 'bg-green-100 text-green-800';
+                            elseif ($user['role'] === 'trainer') echo 'bg-blue-100 text-blue-800';
+                            else echo 'bg-gray-100 text-gray-800';
+                            ?>">
+                            <?= ucfirst(e($user['role'])) ?>
+                        </span>
+                        
+                        <div class="text-sm text-gray-600">
+                            <?php if ($user['role'] === 'admin'): ?>
+                                <span class="italic">Alle Teams</span>
+                            <?php else: ?>
+                                <?= (int)$user['team_count'] ?> Team<?= (int)$user['team_count'] !== 1 ? 's' : '' ?>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-end gap-3">
+                        <a href="users.php?action=edit&user_id=<?= $user['id'] ?>" class="text-orange-600 hover:text-orange-900" title="Bearbeiten">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <?php if ($user['id'] !== (int)$_SESSION['user_id']): ?>
+                            <a href="users.php?action=delete&user_id=<?= $user['id'] ?>&token=<?= $csrf_token ?>" 
+                               class="text-red-600 hover:text-red-900 delete-confirm" title="Löschen">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+        
+        <!-- Tabelle für Desktop -->
+        <div class="hidden sm:block bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
                         <tr>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center">
-                                    <div class="h-10 w-10 flex-shrink-0 bg-orange-200 rounded-full flex items-center justify-center">
-                                        <i class="fas fa-user text-orange-600"></i>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">E-Mail</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rolle</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Team-Zugang</th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aktionen</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <?php foreach ($users as $user): ?>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="h-10 w-10 flex-shrink-0 bg-orange-200 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-user text-orange-600"></i>
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900"><?= e($user['name']) ?></div>
+                                        </div>
                                     </div>
-                                    <div class="ml-4">
-                                        <div class="text-sm font-medium text-gray-900"><?= e($user['name']) ?></div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900"><?= e($user['email']) ?></div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                    <?php 
-                                    if ($user['role'] === 'admin') echo 'bg-green-100 text-green-800';
-                                    elseif ($user['role'] === 'trainer') echo 'bg-blue-100 text-blue-800';
-                                    else echo 'bg-gray-100 text-gray-800';
-                                    ?>">
-                                    <?= ucfirst(e($user['role'])) ?>
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                <?php if ($user['role'] === 'admin'): ?>
-                                    <span class="italic">Alle Teams</span>
-                                <?php else: ?>
-                                    <?= (int)$user['team_count'] ?> Team<?= (int)$user['team_count'] !== 1 ? 's' : '' ?>
-                                    <?php if ((int)$user['team_count'] > 0): ?>
-                                        <a href="team_users.php?user_id=<?= $user['id'] ?>" class="text-orange-600 hover:text-orange-900 ml-2">
-                                            <i class="fas fa-users"></i>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900"><?= e($user['email']) ?></div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                        <?php 
+                                        if ($user['role'] === 'admin') echo 'bg-green-100 text-green-800';
+                                        elseif ($user['role'] === 'trainer') echo 'bg-blue-100 text-blue-800';
+                                        else echo 'bg-gray-100 text-gray-800';
+                                        ?>">
+                                        <?= ucfirst(e($user['role'])) ?>
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <?php if ($user['role'] === 'admin'): ?>
+                                        <span class="italic">Alle Teams</span>
+                                    <?php else: ?>
+                                        <?= (int)$user['team_count'] ?> Team<?= (int)$user['team_count'] !== 1 ? 's' : '' ?>
+                                        <?php if ((int)$user['team_count'] > 0): ?>
+                                            <a href="team_users.php?user_id=<?= $user['id'] ?>" class="text-orange-600 hover:text-orange-900 ml-2">
+                                                <i class="fas fa-users"></i>
+                                            </a>
+                                        <?php endif; ?>
+                                    <?php endif; ?>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <a href="users.php?action=edit&user_id=<?= $user['id'] ?>" class="text-orange-600 hover:text-orange-900 mr-3" title="Bearbeiten">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <?php if ($user['id'] !== (int)$_SESSION['user_id']): ?>
+                                        <a href="users.php?action=delete&user_id=<?= $user['id'] ?>&token=<?= $csrf_token ?>" 
+                                           class="text-red-600 hover:text-red-900 delete-confirm" title="Löschen">
+                                            <i class="fas fa-trash"></i>
                                         </a>
                                     <?php endif; ?>
-                                <?php endif; ?>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <a href="users.php?action=edit&user_id=<?= $user['id'] ?>" class="text-orange-600 hover:text-orange-900 mr-3" title="Bearbeiten">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <?php if ($user['id'] !== (int)$_SESSION['user_id']): ?>
-                                    <a href="users.php?action=delete&user_id=<?= $user['id'] ?>&token=<?= $csrf_token ?>" 
-                                       class="text-red-600 hover:text-red-900 delete-confirm" title="Löschen">
-                                        <i class="fas fa-trash"></i>
-                                    </a>
-                                <?php endif; ?>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-            </tbody>
-        </table>
-    </div>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    <?php endif; ?>
 </div>
 
 <?php require_once 'templates/footer.php'; ?>

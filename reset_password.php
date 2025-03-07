@@ -135,22 +135,78 @@ $csrf_token = generateCSRFToken();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="assets/css/styles.css">
     <style>
+        /* Dark Mode Grundeinstellungen */
+        body {
+            background-color: #121212 !important;
+            color: #e0e0e0 !important;
+        }
+
+        /* Dark Mode für Hauptcontainer */
+        .bg-white, .bg-gray-50, .bg-gray-100 {
+            background-color: #1e1e1e !important;
+            color: #e0e0e0 !important;
+        }
+
+        /* Dark Mode für Text */
+        .text-gray-600, .text-gray-700, .text-gray-800, .text-gray-900 {
+            color: #b0b0b0 !important;
+        }
+
+        /* Dark Mode für Formulare */
         input, select, textarea {
-            color: #333 !important;
-            background-color: #fff !important;
+            background-color: #262626 !important;
+            color: #ffffff !important;
+            border-color: #444 !important;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: #e65100 !important;
+        }
+
+        ::placeholder {
+            color: #808080 !important;
+            opacity: 1;
+        }
+
+        /* Dark Mode für Meldungen */
+        .bg-red-100 {
+            background-color: #4a1d1a !important;
+            border-color: #e53e3e !important;
+        }
+
+        .text-red-700 {
+            color: #feb2b2 !important;
+        }
+
+        .bg-green-100 {
+            background-color: #1b3a2a !important;
+            border-color: #38a169 !important;
+        }
+
+        .text-green-700 {
+            color: #7ae2b0 !important;
+        }
+
+        /* Dark Mode für Buttons */
+        .bg-orange-500 {
+            background-color: #e65100 !important;
+        }
+
+        .bg-orange-500:hover {
+            background-color: #ff6d00 !important;
         }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen">
-    <div class="flex flex-col items-center justify-center min-h-screen">
-        <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-            <div class="text-center mb-8">
-                <i class="fas fa-basketball-ball text-orange-500 text-5xl"></i>
-                <h1 class="text-2xl font-bold mt-4"><?= APP_NAME ?></h1>
+    <div class="flex flex-col items-center justify-center min-h-screen p-4">
+        <div class="bg-white p-6 sm:p-8 rounded-lg shadow-md w-full max-w-md">
+            <div class="text-center mb-6">
+                <i class="fas fa-basketball-ball text-orange-500 text-4xl sm:text-5xl"></i>
+                <h1 class="text-xl sm:text-2xl font-bold mt-4"><?= APP_NAME ?></h1>
                 <?php if ($validToken): ?>
-                    <p class="text-gray-600">Neues Passwort setzen</p>
+                    <p class="text-gray-600 text-sm sm:text-base">Neues Passwort setzen</p>
                 <?php else: ?>
-                    <p class="text-gray-600">Passwort zurücksetzen</p>
+                    <p class="text-gray-600 text-sm sm:text-base">Passwort zurücksetzen</p>
                 <?php endif; ?>
             </div>
             
@@ -171,20 +227,20 @@ $csrf_token = generateCSRFToken();
                     <input type="hidden" name="token" value="<?= e($token) ?>">
                     
                     <div>
-                        <label for="new_password" class="block text-gray-700">Neues Passwort</label>
+                        <label for="new_password" class="block text-gray-700 mb-1 text-sm sm:text-base">Neues Passwort</label>
                         <input type="password" id="new_password" name="new_password" 
-                               class="w-full p-2 border rounded mt-1 focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-800" 
+                               class="w-full p-2 sm:p-3 border rounded mt-1 focus:outline-none focus:ring-2 focus:ring-orange-500" 
                                placeholder="Mindestens 8 Zeichen" required>
                     </div>
                     
                     <div>
-                        <label for="confirm_password" class="block text-gray-700">Passwort bestätigen</label>
+                        <label for="confirm_password" class="block text-gray-700 mb-1 text-sm sm:text-base">Passwort bestätigen</label>
                         <input type="password" id="confirm_password" name="confirm_password" 
-                               class="w-full p-2 border rounded mt-1 focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-800" 
+                               class="w-full p-2 sm:p-3 border rounded mt-1 focus:outline-none focus:ring-2 focus:ring-orange-500" 
                                placeholder="Passwort wiederholen" required>
                     </div>
                     
-                    <button type="submit" class="w-full bg-orange-500 text-white p-2 rounded font-medium hover:bg-orange-600">
+                    <button type="submit" class="w-full bg-orange-500 text-white p-2 sm:p-3 rounded font-medium hover:bg-orange-600 text-sm sm:text-base">
                         Passwort zurücksetzen
                     </button>
                 </form>
@@ -194,26 +250,26 @@ $csrf_token = generateCSRFToken();
                     <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
                     
                     <div>
-                        <label for="email" class="block text-gray-700">E-Mail-Adresse</label>
+                        <label for="email" class="block text-gray-700 mb-1 text-sm sm:text-base">E-Mail-Adresse</label>
                         <input type="email" id="email" name="email" 
-                               class="w-full p-2 border rounded mt-1 focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-800" 
+                               class="w-full p-2 sm:p-3 border rounded mt-1 focus:outline-none focus:ring-2 focus:ring-orange-500" 
                                placeholder="ihre@email.de" required>
                     </div>
                     
-                    <button type="submit" class="w-full bg-orange-500 text-white p-2 rounded font-medium hover:bg-orange-600">
+                    <button type="submit" class="w-full bg-orange-500 text-white p-2 sm:p-3 rounded font-medium hover:bg-orange-600 text-sm sm:text-base">
                         Link zum Zurücksetzen anfordern
                     </button>
                 </form>
             <?php endif; ?>
             
             <div class="mt-6 text-center">
-                <a href="index.php" class="text-orange-600 hover:text-orange-800">
+                <a href="index.php" class="text-orange-600 hover:text-orange-800 text-sm sm:text-base">
                     <i class="fas fa-arrow-left mr-2"></i>Zurück zur Anmeldung
                 </a>
             </div>
         </div>
         
-        <div class="mt-4 text-center text-sm text-gray-500">
+        <div class="mt-4 text-center text-xs sm:text-sm text-gray-500">
             <?= APP_NAME ?> &copy; <?= date('Y') ?> | <i class="fas fa-lock text-xs"></i> SSL-gesichert
         </div>
     </div>

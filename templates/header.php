@@ -88,7 +88,7 @@ $messages = getMessages();
         /* Dark Mode für Formulare */
         input, select, textarea {
             background-color: #262626 !important;
-            color: #e0e0e0 !important;
+            color: #ffffff !important;
             border-color: #444 !important;
         }
 
@@ -98,6 +98,7 @@ $messages = getMessages();
 
         ::placeholder {
             color: #808080 !important;
+            opacity: 1;
         }
 
         select option {
@@ -128,33 +129,58 @@ $messages = getMessages();
         #user-menu a:hover {
             background-color: #333 !important;
         }
+        
+        /* Mobile optimizations */
+        @media (max-width: 640px) {
+            .container {
+                padding-left: 0.5rem;
+                padding-right: 0.5rem;
+            }
+            
+            /* Better tap targets for mobile */
+            button, a, input[type="submit"], select {
+                min-height: 44px; /* Apple's recommended minimum touch target size */
+            }
+            
+            /* Make sure menu items have proper spacing */
+            #user-menu a {
+                padding: 0.75rem 1rem;
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen">
     <div id="app" class="flex flex-col min-h-screen">
         <?php if (isLoggedIn()): ?>
-        <!-- Navigation Header -->
+        <!-- Mobile-Optimized Navigation Header -->
         <header class="bg-orange-500 text-white shadow-md">
-            <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-                <div class="flex items-center space-x-2">
-                    <i class="fas fa-basketball-ball text-2xl"></i>
-                    <h1 class="text-xl font-bold"><?= APP_NAME ?></h1>
-                </div>
-                <div class="flex items-center">
-                    <div class="hidden md:block mr-4">
-                        <span id="user-name"><?= e($userName) ?></span>
-                        <span id="user-role" class="text-sm bg-orange-600 px-2 py-1 rounded ml-2">
-                            <?= ucfirst(e($userRole)) ?>
-                        </span>
+            <div class="container mx-auto px-2 sm:px-4 py-3">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-basketball-ball text-xl sm:text-2xl"></i>
+                        <h1 class="text-lg sm:text-xl font-bold"><?= APP_NAME ?></h1>
                     </div>
-                    <div class="relative" id="user-menu-container">
-                        <button class="flex items-center focus:outline-none" id="user-menu-button">
-                            <img src="assets/images/default-avatar.png" alt="Profilbild" class="h-8 w-8 rounded-full bg-orange-300">
-                            <i class="fas fa-chevron-down ml-2"></i>
-                        </button>
-                        <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 hidden" id="user-menu">
-                            <a href="profile.php" class="block px-4 py-2 text-gray-800 hover:bg-orange-100">Profil</a>
-                            <a href="logout.php" class="block px-4 py-2 text-gray-800 hover:bg-orange-100">Abmelden</a>
+                    <div class="flex items-center">
+                        <div class="hidden md:block mr-4">
+                            <span id="user-name"><?= e($userName) ?></span>
+                            <span id="user-role" class="text-sm bg-orange-600 px-2 py-1 rounded ml-2">
+                                <?= ucfirst(e($userRole)) ?>
+                            </span>
+                        </div>
+                        <div class="relative" id="user-menu-container">
+                            <button class="flex items-center focus:outline-none p-2" id="user-menu-button">
+                                <img src="assets/images/default-avatar.png" alt="Profilbild" class="h-8 w-8 rounded-full bg-orange-300">
+                                <span class="md:hidden text-sm ml-2"><?= e($userName) ?></span>
+                                <i class="fas fa-chevron-down ml-2"></i>
+                            </button>
+                            <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 hidden" id="user-menu">
+                                <a href="profile.php" class="block px-4 py-3 text-gray-800 hover:bg-orange-100">
+                                    <i class="fas fa-user-circle mr-2"></i>Profil
+                                </a>
+                                <a href="logout.php" class="block px-4 py-3 text-gray-800 hover:bg-orange-100">
+                                    <i class="fas fa-sign-out-alt mr-2"></i>Abmelden
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -162,11 +188,11 @@ $messages = getMessages();
         </header>
         <?php endif; ?>
 
-        <!-- Flash Messages -->
+        <!-- Flash Messages - Mobile Optimized -->
         <?php if (!empty($messages)): ?>
-            <div class="container mx-auto px-4 py-4">
+            <div class="container mx-auto px-2 sm:px-4 py-3 sm:py-4">
                 <?php foreach ($messages as $msg): ?>
-                    <div class="mb-4 bg-<?= $msg['type'] ?>-100 border-l-4 border-<?= $msg['type'] ?>-500 text-<?= $msg['type'] ?>-700 p-4">
+                    <div class="mb-3 bg-<?= $msg['type'] ?>-100 border-l-4 border-<?= $msg['type'] ?>-500 text-<?= $msg['type'] ?>-700 p-3 sm:p-4 rounded">
                         <p><?= e($msg['text']) ?></p>
                     </div>
                 <?php endforeach; ?>

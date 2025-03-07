@@ -43,27 +43,37 @@
         .shadow-md {
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.25) !important;
         }
+        
+        /* Mobile optimizations */
+        @media (max-width: 640px) {
+            button, a {
+                min-height: 44px; /* Apple's recommended minimum touch target size */
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex items-center justify-center">
     <div class="container mx-auto px-4 py-6 max-w-md">
-        <div class="bg-white rounded-lg shadow-md p-8 text-center">
+        <div class="bg-white rounded-lg shadow-md p-6 sm:p-8 text-center">
             <div class="text-red-600 mb-4">
-                <i class="fas fa-exclamation-circle text-6xl"></i>
+                <i class="fas fa-exclamation-circle text-5xl sm:text-6xl"></i>
             </div>
             
-            <h1 class="text-2xl font-bold mb-4">Zugriff verweigert</h1>
+            <h1 class="text-xl sm:text-2xl font-bold mb-4">Zugriff verweigert</h1>
             
-            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6">
+            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 text-sm sm:text-base">
                 <p>Der angegebene Zugriffslink ist ungültig oder abgelaufen.</p>
             </div>
             
-            <p class="text-gray-600 mb-6">
+            <p class="text-gray-600 mb-6 text-sm sm:text-base">
                 Bitte wenden Sie sich an Ihren Teamverantwortlichen, um einen gültigen Zugriffslink zu erhalten.
             </p>
             
             <div class="flex justify-center">
-                <a href="index.php" class="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600">
+                <a href="index.php" class="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 w-full sm:w-auto text-sm sm:text-base">
                     <i class="fas fa-arrow-left mr-2"></i>Zurück zur Startseite
                 </a>
             </div>
