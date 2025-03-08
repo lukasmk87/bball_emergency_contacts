@@ -36,7 +36,20 @@ switch ($activeTab) {
     case 'emergency-contacts':
         $players = [];
         if ($selectedTeamId) {
-            $players = getPlayersForTeam($selectedTeamId);
+            $rawPlayers = getPlayersForTeam($selectedTeamId);
+            
+            // Deduplicate players first (in case there are duplicates in the database)
+            $uniquePlayers = [];
+            $seenPlayerIds = [];
+            
+            foreach ($rawPlayers as $player) {
+                if (!isset($seenPlayerIds[$player['id']])) {
+                    $seenPlayerIds[$player['id']] = true;
+                    $uniquePlayers[] = $player;
+                }
+            }
+            
+            $players = $uniquePlayers;
             
             // Notfallkontakte für jeden Spieler abrufen - mit Deduplizierung
             foreach ($players as &$player) {
@@ -490,8 +503,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const teamSelect = document.getElementById('team-select');
     if (teamSelect) {
         teamSelect.addEventListener('change', function() {
-            // Redirect to the dashboard with the selected team
-            window.location.href = 'dashboard.php?tab=emergency-contacts&team_id=' + this.value;
+            // Clear current URL parameters and set new ones to avoid parameter duplication
+            const baseUrl = window.location.pathname; // Gets just the 'dashboard.php' part
+            window.location.href = baseUrl + '?tab=emergency-contacts&team_id=' + this.value;
         });
     }
 });
