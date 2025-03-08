@@ -38,9 +38,23 @@ switch ($activeTab) {
         if ($selectedTeamId) {
             $players = getPlayersForTeam($selectedTeamId);
             
-            // Notfallkontakte für jeden Spieler abrufen
+            // Notfallkontakte für jeden Spieler abrufen - mit Deduplizierung
             foreach ($players as &$player) {
-                $player['emergency_contacts'] = getEmergencyContactsForPlayer($player['id']);
+                $contacts = getEmergencyContactsForPlayer($player['id']);
+                
+                // Ensure uniqueness of emergency contacts
+                $uniqueContacts = [];
+                $seenContactIds = [];
+                
+                foreach ($contacts as $contact) {
+                    // Only add contact if we haven't seen its ID before
+                    if (!isset($seenContactIds[$contact['id']])) {
+                        $seenContactIds[$contact['id']] = true;
+                        $uniqueContacts[] = $contact;
+                    }
+                }
+                
+                $player['emergency_contacts'] = $uniqueContacts;
             }
         }
         break;
@@ -469,5 +483,18 @@ $csrf_token = generateCSRFToken();
         <?php endif; ?>
     </div>
 </div>
+
+<!-- Add JavaScript for team selection -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const teamSelect = document.getElementById('team-select');
+    if (teamSelect) {
+        teamSelect.addEventListener('change', function() {
+            // Redirect to the dashboard with the selected team
+            window.location.href = 'dashboard.php?tab=emergency-contacts&team_id=' + this.value;
+        });
+    }
+});
+</script>
 
 <?php require_once 'templates/footer.php'; ?>
