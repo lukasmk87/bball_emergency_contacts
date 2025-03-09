@@ -22,9 +22,9 @@ $hasAccess = false;
 $teamName = '';
 
 foreach ($teams as $team) {
-    if ($team['id'] == $teamId) {
+    if (isset($team['id']) && $team['id'] == $teamId) {
         $hasAccess = true;
-        $teamName = $team['name'];
+        $teamName = $team['name'] ?? '';
         break;
     }
 }
@@ -35,109 +35,163 @@ if (!$hasAccess && !hasRole('admin')) {
     exit;
 }
 
-// Alle Spieler und ihre Notfallkontakte für das Team abrufen
-$players = db()->fetchAll("
-    SELECT p.id, p.first_name, p.last_name, p.jersey_number, p.position
-    FROM players p
-    WHERE p.team_id = ?
-    ORDER BY p.last_name, p.first_name
-", [$teamId]);
-
-$playerContacts = [];
-
-foreach ($players as $player) {
-    $contacts = db()->fetchAll("
-        SELECT contact_name, phone_number, relationship
-        FROM emergency_contacts
-        WHERE player_id = ?
-        ORDER BY id
-    ", [$player['id']]);
+try {
+    // Alle Spieler für das Team abrufen
+    $players = db()->fetchAll("
+        SELECT p.id, p.first_name, p.last_name, p.jersey_number, p.position
+        FROM players p
+        WHERE p.team_id = ?
+        ORDER BY p.last_name, p.first_name
+    ", [$teamId]);
     
-    $playerContacts[$player['id']] = [
-        'player' => $player,
-        'contacts' => $contacts
-    ];
+    // Sammle alle Spieler-IDs für eine optimierte Abfrage
+    $playerIds = array_column($players, 'id');
+    
+    // Initialisiere playerContacts Array
+    $playerContacts = [];
+    
+    if (!empty($playerIds)) {
+        // Hole alle Kontakte in einer Abfrage
+        $allContacts = db()->fetchAll("
+            SELECT player_id, contact_name, phone_number, relationship
+            FROM emergency_contacts
+            WHERE player_id IN (" . implode(',', $playerIds) . ")
+            ORDER BY player_id, id
+        ");
+        
+        // Organisiere nach Spieler-ID
+        $contactsByPlayer = [];
+        foreach ($allContacts as $contact) {
+            $contactsByPlayer[$contact['player_id']][] = $contact;
+        }
+        
+        // Baue das endgültige Array
+        foreach ($players as $player) {
+            $playerContacts[$player['id']] = [
+                'player' => $player,
+                'contacts' => $contactsByPlayer[$player['id']] ?? []
+            ];
+        }
+    }
+    
+    // Aktivität protokollieren
+    logActivity($_SESSION['user_id'], 'export_contacts', "Notfallkontakte für Team $teamId exportiert im Format $format");
+    
+    // Ausgabe basierend auf Format
+    switch ($format) {
+        case 'csv':
+            outputCSV($teamName, $playerContacts);
+            break;
+            
+        case 'pdf':
+            outputPDF($teamName, $playerContacts);
+            break;
+            
+        case 'print':
+        default:
+            outputPrintHTML($teamName, $playerContacts);
+            break;
+    }
+} catch (Exception $e) {
+    handleError($e, 'Fehler beim Exportieren der Kontakte.');
+    redirect("dashboard.php?team_id=$teamId");
+    exit;
 }
 
-// Aktivität protokollieren
-logActivity($_SESSION['user_id'], 'export_contacts', "Notfallkontakte für Team $teamId exportiert im Format $format");
-
-// Ausgabe basierend auf Format
-switch ($format) {
-    case 'csv':
-        // CSV-Datei erzeugen
-        header('Content-Type: text/csv; charset=utf-8');
-        header('Content-Disposition: attachment; filename="notfallkontakte_' . sanitizeFilename($teamName) . '.csv"');
+/**
+ * CSV-Export mit korrekten Headers
+ */
+function outputCSV($teamName, $playerContacts) {
+    // Correct headers for CSV
+    header('Content-Type: text/csv; charset=utf-8');
+    header('Content-Disposition: attachment; filename="notfallkontakte_' . sanitizeFilename($teamName) . '.csv"');
+    
+    $output = fopen('php://output', 'w');
+    
+    // BOM for Excel UTF-8 recognition
+    fprintf($output, chr(0xEF) . chr(0xBB) . chr(0xBF));
+    
+    // CSV header
+    fputcsv($output, ['Spieler', 'Trikotnummer', 'Position', 'Notfallkontakt', 'Telefonnummer', 'Beziehung']);
+    
+    // Output data
+    foreach ($playerContacts as $data) {
+        $player = $data['player'];
+        $contacts = $data['contacts'];
         
-        $output = fopen('php://output', 'w');
+        $playerName = $player['first_name'] . ' ' . $player['last_name'];
         
-        // BOM für Excel UTF-8-Erkennung
-        fprintf($output, chr(0xEF) . chr(0xBB) . chr(0xBF));
-        
-        // CSV-Header
-        fputcsv($output, ['Spieler', 'Trikotnummer', 'Position', 'Notfallkontakt', 'Telefonnummer', 'Beziehung']);
-        
-        // Daten
-        foreach ($playerContacts as $data) {
-            $player = $data['player'];
-            $contacts = $data['contacts'];
-            
-            $playerName = $player['first_name'] . ' ' . $player['last_name'];
-            
-            if (empty($contacts)) {
-                // Spieler ohne Kontakte
+        if (empty($contacts)) {
+            // Player without contacts
+            fputcsv($output, [
+                $playerName,
+                $player['jersey_number'],
+                $player['position'],
+                'Kein Notfallkontakt',
+                '',
+                ''
+            ]);
+        } else {
+            // Player with contacts
+            foreach ($contacts as $index => $contact) {
                 fputcsv($output, [
                     $playerName,
                     $player['jersey_number'],
                     $player['position'],
-                    'Kein Notfallkontakt',
-                    '',
-                    ''
+                    $contact['contact_name'],
+                    $contact['phone_number'],
+                    $contact['relationship']
                 ]);
-            } else {
-                // Spieler mit Kontakten
-                foreach ($contacts as $index => $contact) {
-                    fputcsv($output, [
-                        $playerName,
-                        $player['jersey_number'],
-                        $player['position'],
-                        $contact['contact_name'],
-                        $contact['phone_number'],
-                        $contact['relationship']
-                    ]);
-                }
             }
         }
-        
-        fclose($output);
-        exit;
-        
-    case 'pdf':
-        // Erfordert eine PDF-Bibliothek wie TCPDF oder FPDF
-        // Für dieses Beispiel wird eine einfache HTML-Seite mit Print-CSS angezeigt
-        // In einer vollständigen Implementierung würde hier die PDF-Generierung stehen
-        header('Content-Type: text/html; charset=utf-8');
-        echo generatePrintableHTML($teamName, $playerContacts, true);
-        exit;
-        
-    case 'print':
-    default:
-        // Druckbare HTML-Seite
-        header('Content-Type: text/html; charset=utf-8');
-        echo generatePrintableHTML($teamName, $playerContacts);
-        exit;
+    }
+    
+    fclose($output);
+    exit;
 }
 
-// Hilfsfunktion: Dateinamen säubern
+/**
+ * PDF-Export (Fall-back to HTML with print CSS)
+ */
+function outputPDF($teamName, $playerContacts) {
+    // Set proper content type header
+    header('Content-Type: text/html; charset=utf-8');
+    echo generatePrintableHTML($teamName, $playerContacts, true);
+    exit;
+}
+
+/**
+ * HTML-Ausgabe mit Druck-CSS
+ */
+function outputPrintHTML($teamName, $playerContacts) {
+    // Set proper content type header
+    header('Content-Type: text/html; charset=utf-8');
+    echo generatePrintableHTML($teamName, $playerContacts);
+    exit;
+}
+
+/**
+ * Dateinamen säubern
+ */
 function sanitizeFilename($filename) {
-    // Umlaute ersetzen
-    $filename = str_replace(['ä', 'ö', 'ü', 'Ä', 'Ö', 'Ü', 'ß'], ['ae', 'oe', 'ue', 'Ae', 'Oe', 'Ue', 'ss'], $filename);
-    // Nur alphanumerische Zeichen, Unterstriche und Bindestriche beibehalten
+    // Replace umlauts and special characters
+    $replacements = [
+        'ä' => 'ae', 'ö' => 'oe', 'ü' => 'ue',
+        'Ä' => 'Ae', 'Ö' => 'Oe', 'Ü' => 'Ue',
+        'ß' => 'ss', ' ' => '_'
+    ];
+    
+    $filename = str_replace(array_keys($replacements), array_values($replacements), $filename);
+    
+    // Keep only alphanumeric characters, underscores, and hyphens
     $filename = preg_replace('/[^a-zA-Z0-9_-]/', '_', $filename);
+    
     return $filename;
 }
 
-// Hilfsfunktion: Mobile-freundliche druckbare HTML-Seite generieren
+/**
+ * Mobile-freundliche druckbare HTML-Seite generieren
+ */
 function generatePrintableHTML($teamName, $playerContacts, $forPDF = false) {
     $html = '<!DOCTYPE html>
 <html lang="de">
@@ -146,14 +200,17 @@ function generatePrintableHTML($teamName, $playerContacts, $forPDF = false) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Notfallkontakte: ' . htmlspecialchars($teamName) . '</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         @media print {
-            body { font-size: 12pt; }
+            @page { margin: 1cm; }
+            body { font-size: 12pt; font-family: Arial, sans-serif; }
             .pagebreak { page-break-before: always; }
             .no-print { display: none !important; }
             table { width: 100%; border-collapse: collapse; }
             th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-            th { background-color: #f2f2f2; }
+            th { background-color: #f2f2f2; font-weight: bold; }
+            a { color: inherit; text-decoration: none; }
         }
         .print-header { text-align: center; margin-bottom: 20px; }
         
@@ -163,43 +220,68 @@ function generatePrintableHTML($teamName, $playerContacts, $forPDF = false) {
             width: 100%;
         }
         
-        /* Dark mode styles for better readability */
-        @media (prefers-color-scheme: dark) {
-            body {
-                background-color: #121212;
-                color: #e0e0e0;
-            }
-            
-            table, th, td {
-                border-color: #333;
-            }
-            
-            th {
-                background-color: #262626;
-            }
-            
-            a {
-                color: #ff9800;
-            }
-            
-            button {
-                background-color: #e65100;
-                color: white;
-            }
-            
-            button:hover {
-                background-color: #ff6d00;
-            }
+        /* Responsive styles */
+        @media (max-width: 640px) {
+            table { font-size: 14px; }
+            th, td { padding: 6px 4px; }
+            .print-header h1 { font-size: 20px; }
+            .print-header p { font-size: 14px; }
+            button { min-height: 44px; }
+        }
+        
+        /* Better accessibility */
+        a:focus, button:focus {
+            outline: 2px solid #e65100;
+            outline-offset: 2px;
+        }
+        
+        button {
+            transition: background-color 0.2s;
+        }
+        
+        .btn-print {
+            background-color: #e65100;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+        }
+        
+        .btn-print:hover {
+            background-color: #ff6d00;
+        }
+        
+        .btn-back {
+            background-color: #64748b;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+            text-decoration: none;
+        }
+        
+        .btn-back:hover {
+            background-color: #475569;
         }
     </style>
 </head>
 <body class="bg-white p-4 sm:p-8">
     <div class="no-print flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-3">
-        <button onclick="window.print()" class="bg-orange-500 w-full sm:w-auto text-white px-4 py-2 rounded hover:bg-orange-600 flex items-center justify-center">
-            <i class="fas fa-print mr-2"></i>Drucken
+        <button id="print-button" onclick="window.print()" class="btn-print w-full sm:w-auto">
+            <i class="fas fa-print mr-2" aria-hidden="true"></i>Drucken
         </button>
-        <a href="dashboard.php?team_id=' . urlencode((int)$_GET['team_id']) . '" class="bg-gray-300 w-full sm:w-auto text-center text-gray-800 px-4 py-2 rounded hover:bg-gray-400 flex items-center justify-center">
-            <i class="fas fa-arrow-left mr-2"></i>Zurück zum Dashboard
+        <a href="dashboard.php?team_id=' . urlencode((int)$_GET['team_id']) . '" class="btn-back w-full sm:w-auto text-center">
+            <i class="fas fa-arrow-left mr-2" aria-hidden="true"></i>Zurück zum Dashboard
         </a>
     </div>
     
@@ -209,7 +291,7 @@ function generatePrintableHTML($teamName, $playerContacts, $forPDF = false) {
     </div>
     
     <div class="table-container">
-        <table class="min-w-full border">
+        <table class="min-w-full border" aria-label="Notfallkontakte">
             <thead>
                 <tr>
                     <th class="border px-4 py-2">Spieler</th>
@@ -226,13 +308,13 @@ function generatePrintableHTML($teamName, $playerContacts, $forPDF = false) {
         $contacts = $data['contacts'];
         
         $playerName = htmlspecialchars($player['first_name'] . ' ' . $player['last_name']);
-        $playerNumber = htmlspecialchars($player['jersey_number']);
-        $playerPosition = htmlspecialchars($player['position']);
+        $playerNumber = htmlspecialchars($player['jersey_number'] ?? '');
+        $playerPosition = htmlspecialchars($player['position'] ?? '');
         
         if (empty($contacts)) {
             // Spieler ohne Kontakte
             $html .= '<tr>
-                <td class="border px-4 py-2">' . $playerName . ' (' . $playerNumber . ')</td>
+                <td class="border px-4 py-2">' . $playerName . (!empty($playerNumber) ? ' (' . $playerNumber . ')' : '') . '</td>
                 <td class="border px-4 py-2">' . $playerPosition . '</td>
                 <td class="border px-4 py-2 text-red-600" colspan="3">Kein Notfallkontakt vorhanden</td>
             </tr>';
@@ -243,7 +325,7 @@ function generatePrintableHTML($teamName, $playerContacts, $forPDF = false) {
                 if ($index === 0) {
                     // Nur in der ersten Zeile des Spielers den Namen anzeigen
                     $html .= '
-                        <td class="border px-4 py-2" rowspan="' . count($contacts) . '">' . $playerName . ' (' . $playerNumber . ')</td>
+                        <td class="border px-4 py-2" rowspan="' . count($contacts) . '">' . $playerName . (!empty($playerNumber) ? ' (' . $playerNumber . ')' : '') . '</td>
                         <td class="border px-4 py-2" rowspan="' . count($contacts) . '">' . $playerPosition . '</td>';
                 }
                 $html .= '
@@ -264,7 +346,17 @@ function generatePrintableHTML($teamName, $playerContacts, $forPDF = false) {
         <p>Generiert durch ' . htmlspecialchars(APP_NAME) . ' am ' . date('d.m.Y') . '.</p>
     </div>
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
+    <script>
+        // Fix for iOS Safari printing
+        document.addEventListener("DOMContentLoaded", function() {
+            const printButton = document.getElementById("print-button");
+            printButton.addEventListener("click", function() {
+                setTimeout(function() {
+                    window.print();
+                }, 250);
+            });
+        });
+    </script>
 </body>
 </html>';
 

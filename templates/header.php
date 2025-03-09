@@ -6,7 +6,11 @@ startSecureSession();
 
 // Überprüfen, ob Benutzer angemeldet ist (außer auf der Login-Seite)
 $current_page = basename($_SERVER['PHP_SELF']);
-if ($current_page !== 'index.php' && $current_page !== 'reset_password.php' && !isLoggedIn()) {
+if ($current_page !== 'index.php' && 
+    $current_page !== 'reset_password.php' && 
+    $current_page !== 'player_registration.php' && 
+    $current_page !== 'emergency_access.php' && 
+    !isLoggedIn()) {
     // Bevor wir eine Weiterleitung durchführen, stellen wir sicher, dass keine Ausgabe erfolgt ist
     // Wenn die Weiterleitung hier stattfindet, muss sie vor jeglicher HTML-Ausgabe erfolgen
     redirect('index.php');
@@ -17,9 +21,13 @@ if ($current_page !== 'index.php' && $current_page !== 'reset_password.php' && !
 $userName = '';
 $userRole = '';
 $isAdmin = false;
+$userId = 0;
+$selectedTeamId = isset($_GET['team_id']) ? (int)$_GET['team_id'] : null;
 
 if (isLoggedIn()) {
+    $userId = $_SESSION['user_id'] ?? 0;
     $userName = $_SESSION['user_name'] ?? '';
+    $userEmail = $_SESSION['user_email'] ?? '';
     $userRole = $_SESSION['user_role'] ?? '';
     $isAdmin = hasRole('admin');
 }
@@ -31,125 +39,31 @@ $messages = getMessages();
 // Alles in diesem Block wird erst ausgeführt, nachdem alle potenziellen Weiterleitungen überprüft wurden
 ?>
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" data-theme="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="description" content="Notfallkontakte für Basketballteams - sicher und einfach verwalten">
+    <meta name="theme-color" content="#e65100">
     <title><?= APP_NAME ?></title>
+    
+    <!-- CSS Libraries -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Application CSS -->
     <link rel="stylesheet" href="assets/css/styles.css">
-    <!-- Dark Mode Styles -->
-    <style>
-        /* Dark Mode Grundeinstellungen */
-        body {
-            background-color: #121212 !important;
-            color: #e0e0e0 !important;
-        }
-
-        /* Dark Mode für Hauptcontainer */
-        .bg-white, .bg-gray-50, .bg-gray-100 {
-            background-color: #1e1e1e !important;
-            color: #e0e0e0 !important;
-        }
-
-        /* Dark Mode für Navigation */
-        .bg-orange-500 {
-            background-color: #e65100 !important;
-        }
-
-        /* Dark Mode für Text */
-        .text-gray-600, .text-gray-700, .text-gray-800, .text-gray-900 {
-            color: #b0b0b0 !important;
-        }
-
-        /* Dark Mode für Tabellenzeilen */
-        table tbody tr {
-            background-color: #1e1e1e !important;
-            border-color: #333 !important;
-        }
-
-        table tbody tr:hover {
-            background-color: #262626 !important;
-        }
-
-        thead {
-            background-color: #262626 !important;
-        }
-
-        th {
-            color: #b0b0b0 !important;
-        }
-
-        td {
-            border-color: #333 !important;
-        }
-
-        /* Dark Mode für Formulare */
-        input, select, textarea {
-            background-color: #262626 !important;
-            color: #ffffff !important;
-            border-color: #444 !important;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            border-color: #e65100 !important;
-        }
-
-        ::placeholder {
-            color: #808080 !important;
-            opacity: 1;
-        }
-
-        select option {
-            background-color: #262626 !important;
-            color: #e0e0e0 !important;
-        }
-
-        /* Dark Mode für Buttons */
-        .bg-gray-300, .bg-gray-400 {
-            background-color: #383838 !important;
-            color: #e0e0e0 !important;
-        }
-
-        .bg-gray-300:hover, .bg-gray-400:hover {
-            background-color: #444444 !important;
-        }
-
-        /* User Menu Dark Mode Anpassung */
-        #user-menu {
-            background-color: #262626 !important;
-            border-color: #444 !important;
-        }
-
-        #user-menu a {
-            color: #e0e0e0 !important;
-        }
-
-        #user-menu a:hover {
-            background-color: #333 !important;
-        }
-        
-        /* Mobile optimizations */
-        @media (max-width: 640px) {
-            .container {
-                padding-left: 0.5rem;
-                padding-right: 0.5rem;
-            }
-            
-            /* Better tap targets for mobile */
-            button, a, input[type="submit"], select {
-                min-height: 44px; /* Apple's recommended minimum touch target size */
-            }
-            
-            /* Make sure menu items have proper spacing */
-            #user-menu a {
-                padding: 0.75rem 1rem;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="assets/css/dark-mode.css">
+    
+    <!-- Preload important resources -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
 </head>
-<body class="bg-gray-100 min-h-screen">
+<body class="bg-gray-100 min-h-screen page-transition">
+    <!-- Skip to content link for accessibility -->
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:px-4 focus:py-2 focus:bg-orange-500 focus:text-white focus:top-4 focus:left-4 focus:rounded">
+        Zum Hauptinhalt springen
+    </a>
+
     <div id="app" class="flex flex-col min-h-screen">
         <?php if (isLoggedIn()): ?>
         <!-- Mobile-Optimized Navigation Header -->
@@ -157,28 +71,45 @@ $messages = getMessages();
             <div class="container mx-auto px-2 sm:px-4 py-3">
                 <div class="flex justify-between items-center">
                     <div class="flex items-center space-x-2">
-                        <i class="fas fa-basketball-ball text-xl sm:text-2xl"></i>
-                        <h1 class="text-lg sm:text-xl font-bold"><?= APP_NAME ?></h1>
+                        <a href="dashboard.php" class="flex items-center" aria-label="Zur Startseite">
+                            <i class="fas fa-basketball-ball text-xl sm:text-2xl" aria-hidden="true"></i>
+                            <h1 class="text-lg sm:text-xl font-bold ml-2"><?= APP_NAME ?></h1>
+                        </a>
                     </div>
                     <div class="flex items-center">
                         <div class="hidden md:block mr-4">
                             <span id="user-name"><?= e($userName) ?></span>
-                            <span id="user-role" class="text-sm bg-orange-600 px-2 py-1 rounded ml-2">
+                            <span id="user-role" class="text-sm bg-orange-600 px-2 py-1 rounded ml-2" aria-label="Rolle">
                                 <?= ucfirst(e($userRole)) ?>
                             </span>
                         </div>
+                        
+                        <!-- Dark mode toggle button -->
+                        <button id="theme-toggle" class="ml-2 p-2 rounded-full hover:bg-orange-600 focus:outline-none" aria-label="Dunkelmodus umschalten">
+                            <i class="fas fa-moon" id="dark-icon" aria-hidden="true"></i>
+                            <i class="fas fa-sun hidden" id="light-icon" aria-hidden="true"></i>
+                        </button>
+                        
                         <div class="relative" id="user-menu-container">
-                            <button class="flex items-center focus:outline-none p-2" id="user-menu-button">
+                            <button class="flex items-center focus:outline-none focus:ring-2 focus:ring-white p-2" 
+                                    id="user-menu-button"
+                                    aria-expanded="false"
+                                    aria-haspopup="true"
+                                    aria-controls="user-menu">
                                 <img src="assets/images/default-avatar.png" alt="Profilbild" class="h-8 w-8 rounded-full bg-orange-300">
                                 <span class="md:hidden text-sm ml-2"><?= e($userName) ?></span>
-                                <i class="fas fa-chevron-down ml-2"></i>
+                                <i class="fas fa-chevron-down ml-2" aria-hidden="true"></i>
                             </button>
-                            <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 hidden" id="user-menu">
-                                <a href="profile.php" class="block px-4 py-3 text-gray-800 hover:bg-orange-100">
-                                    <i class="fas fa-user-circle mr-2"></i>Profil
+                            <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 hidden" 
+                                 id="user-menu"
+                                 role="menu"
+                                 aria-orientation="vertical"
+                                 aria-labelledby="user-menu-button">
+                                <a href="profile.php" class="block px-4 py-3 text-gray-800 hover:bg-orange-100" role="menuitem" tabindex="-1">
+                                    <i class="fas fa-user-circle mr-2" aria-hidden="true"></i>Profil
                                 </a>
-                                <a href="logout.php" class="block px-4 py-3 text-gray-800 hover:bg-orange-100">
-                                    <i class="fas fa-sign-out-alt mr-2"></i>Abmelden
+                                <a href="logout.php" class="block px-4 py-3 text-gray-800 hover:bg-orange-100" role="menuitem" tabindex="-1">
+                                    <i class="fas fa-sign-out-alt mr-2" aria-hidden="true"></i>Abmelden
                                 </a>
                             </div>
                         </div>
@@ -186,15 +117,48 @@ $messages = getMessages();
                 </div>
             </div>
         </header>
+        
+        <!-- Mobile Bottom Navigation -->
+        <div class="fixed bottom-0 left-0 right-0 bg-white border-t z-10 md:hidden">
+            <div class="flex justify-around items-center p-2">
+                <a href="dashboard.php" class="flex flex-col items-center p-2 text-sm">
+                    <i class="fas fa-home text-lg" aria-hidden="true"></i>
+                    <span>Startseite</span>
+                </a>
+                <?php if ($isAdmin): ?>
+                <a href="teams.php" class="flex flex-col items-center p-2 text-sm">
+                    <i class="fas fa-users text-lg" aria-hidden="true"></i>
+                    <span>Teams</span>
+                </a>
+                <a href="users.php" class="flex flex-col items-center p-2 text-sm">
+                    <i class="fas fa-user-cog text-lg" aria-hidden="true"></i>
+                    <span>Benutzer</span>
+                </a>
+                <?php elseif (hasRole('trainer')): ?>
+                <a href="players.php?team_id=<?= $selectedTeamId ?? '' ?>" class="flex flex-col items-center p-2 text-sm">
+                    <i class="fas fa-user-plus text-lg" aria-hidden="true"></i>
+                    <span>Spieler</span>
+                </a>
+                <?php endif; ?>
+                <a href="profile.php" class="flex flex-col items-center p-2 text-sm">
+                    <i class="fas fa-user-circle text-lg" aria-hidden="true"></i>
+                    <span>Profil</span>
+                </a>
+            </div>
+        </div>
         <?php endif; ?>
 
         <!-- Flash Messages - Mobile Optimized -->
         <?php if (!empty($messages)): ?>
             <div class="container mx-auto px-2 sm:px-4 py-3 sm:py-4">
                 <?php foreach ($messages as $msg): ?>
-                    <div class="mb-3 bg-<?= $msg['type'] ?>-100 border-l-4 border-<?= $msg['type'] ?>-500 text-<?= $msg['type'] ?>-700 p-3 sm:p-4 rounded">
+                    <div class="mb-3 bg-<?= $msg['type'] ?>-100 border-l-4 border-<?= $msg['type'] ?>-500 text-<?= $msg['type'] ?>-700 p-3 sm:p-4 rounded notification relative" role="alert">
                         <p><?= e($msg['text']) ?></p>
                     </div>
                 <?php endforeach; ?>
             </div>
         <?php endif; ?>
+        
+        <!-- Main Content Container starts in specific pages -->
+        <main id="main-content">
+            <!-- Page specific content starts here -->

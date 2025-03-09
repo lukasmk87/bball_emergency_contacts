@@ -1,0 +1,30 @@
+# Enable URL rewriting
+RewriteEngine On
+
+# Set 404 error page
+ErrorDocument 404 /404.php
+
+# Protect sensitive files
+<FilesMatch "^(\.htaccess|\.htpasswd|config\.php)">
+    Order deny,allow
+    Deny from all
+</FilesMatch>
+
+# Disable directory listing
+Options -Indexes
+
+# Enable HTTP Strict Transport Security (HSTS)
+<IfModule mod_headers.c>
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+</IfModule>
+
+# Add security headers
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Set default character set
+AddDefaultCharset UTF-8

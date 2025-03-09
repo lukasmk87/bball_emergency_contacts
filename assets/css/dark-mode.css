@@ -1,0 +1,293 @@
+/* Dark mode styles using CSS variables and data-theme attribute */
+:root {
+    --bg-main: #f7fafc;
+    --bg-card: #ffffff;
+    --bg-alt: #f1f1f1;
+    --text-main: #2d3748;
+    --text-secondary: #718096;
+    --primary: #e65100;
+    --primary-hover: #ff6d00;
+    --border-color: #e2e8f0;
+    --input-bg: #ffffff;
+    --input-text: #2d3748;
+    --input-border: #e2e8f0;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --table-header-bg: #f3f4f6;
+    --table-border: #e5e7eb;
+    --table-row-hover: rgba(237, 137, 54, 0.05);
+    --text-success: #38a169;
+    --text-danger: #e53e3e;
+    --text-warning: #d69e2e;
+    --text-info: #4299e1;
+    --bg-success-light: #f0fff4;
+    --bg-danger-light: #fff5f5;
+    --bg-warning-light: #fffaf0;
+    --bg-info-light: #ebf8ff;
+}
+
+html[data-theme="dark"] {
+    --bg-main: #121212;
+    --bg-card: #1e1e1e;
+    --bg-alt: #262626;
+    --text-main: #e0e0e0;
+    --text-secondary: #b0b0b0;
+    --primary: #ff6d00;
+    --primary-hover: #ff9800;
+    --border-color: #333333;
+    --input-bg: #262626;
+    --input-text: #ffffff;
+    --input-border: #444444;
+    --shadow-color: rgba(0, 0, 0, 0.3);
+    --table-header-bg: #262626;
+    --table-border: #333333;
+    --table-row-hover: rgba(255, 109, 0, 0.1);
+    --text-success: #7ae2b0;
+    --text-danger: #feb2b2;
+    --text-warning: #fce96a;
+    --text-info: #90cdf4;
+    --bg-success-light: #1b3a2a;
+    --bg-danger-light: #4a1d1a;
+    --bg-warning-light: #483b02;
+    --bg-info-light: #1a365d;
+}
+
+/* Base elements */
+body {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+}
+
+/* Background color adjustments */
+.bg-white, .bg-gray-50, .bg-gray-100 {
+    background-color: var(--bg-card);
+    color: var(--text-main);
+}
+
+/* Text color adjustments */
+.text-gray-600, .text-gray-700, .text-gray-800, .text-gray-900 {
+    color: var(--text-secondary);
+}
+
+/* Form elements */
+input, select, textarea {
+    background-color: var(--input-bg);
+    color: var(--input-text);
+    border-color: var(--input-border);
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: var(--primary);
+}
+
+::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.7;
+}
+
+select option {
+    background-color: var(--input-bg);
+    color: var(--input-text);
+}
+
+/* Buttons */
+.bg-gray-300, .bg-gray-400 {
+    background-color: var(--bg-alt);
+    color: var(--text-main);
+}
+
+.bg-gray-300:hover, .bg-gray-400:hover {
+    background-color: #444444;
+}
+
+.bg-orange-500 {
+    background-color: var(--primary);
+}
+
+.bg-orange-500:hover {
+    background-color: var(--primary-hover);
+}
+
+/* Tables */
+table {
+    border-color: var(--table-border);
+}
+
+table thead {
+    background-color: var(--table-header-bg);
+}
+
+table th {
+    color: var(--text-secondary);
+}
+
+table tbody tr {
+    background-color: var(--bg-card);
+    border-color: var(--table-border);
+}
+
+table tbody tr:hover {
+    background-color: var(--table-row-hover);
+}
+
+/* Status badges */
+.badge-green, .bg-green-100, .text-green-800 {
+    background-color: var(--bg-success-light);
+    color: var(--text-success);
+}
+
+.badge-blue, .bg-blue-100, .text-blue-800 {
+    background-color: var(--bg-info-light);
+    color: var(--text-info);
+}
+
+.badge-orange, .bg-orange-100, .text-orange-800 {
+    background-color: var(--bg-warning-light);
+    color: var(--text-warning);
+}
+
+.badge-red, .bg-red-100, .text-red-800 {
+    background-color: var(--bg-danger-light);
+    color: var(--text-danger);
+}
+
+/* Alert messages */
+.bg-green-100 {
+    background-color: var(--bg-success-light);
+    border-color: var(--text-success);
+}
+
+.text-green-700 {
+    color: var(--text-success);
+}
+
+.bg-red-100 {
+    background-color: var(--bg-danger-light);
+    border-color: var(--text-danger);
+}
+
+.text-red-700 {
+    color: var(--text-danger);
+}
+
+.bg-yellow-100 {
+    background-color: var(--bg-warning-light);
+    border-color: var(--text-warning);
+}
+
+.text-yellow-700 {
+    color: var(--text-warning);
+}
+
+.bg-blue-100 {
+    background-color: var(--bg-info-light);
+    border-color: var(--text-info);
+}
+
+.text-blue-700 {
+    color: var(--text-info);
+}
+
+/* Cards and shadows */
+.shadow-md {
+    box-shadow: 0 4px 6px -1px var(--shadow-color), 0 2px 4px -1px var(--shadow-color);
+}
+
+.rounded-lg, .rounded {
+    border-color: var(--border-color);
+}
+
+/* Links */
+a {
+    color: var(--primary);
+}
+
+a:hover {
+    color: var(--primary-hover);
+}
+
+a.text-orange-600, 
+a.text-blue-600, 
+a.text-green-600 {
+    color: var(--primary);
+}
+
+a.text-orange-600:hover, 
+a.text-blue-600:hover, 
+a.text-green-600:hover {
+    color: var(--primary-hover);
+}
+
+/* User menu */
+#user-menu {
+    background-color: var(--bg-card);
+    border-color: var(--border-color);
+    box-shadow: 0 4px 6px -1px var(--shadow-color), 0 2px 4px -1px var(--shadow-color);
+}
+
+#user-menu a {
+    color: var(--text-main);
+}
+
+#user-menu a:hover {
+    background-color: var(--bg-alt);
+}
+
+/* Bottom navigation for mobile */
+.fixed.bottom-0 {
+    background-color: var(--bg-card);
+    border-color: var(--border-color);
+}
+
+/* Quick transition when toggling modes */
+.page-transition, body, input, select, textarea, a, button, .shadow-md, table, tr, th, td {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Print styles - always use light theme for printing */
+@media print {
+    html[data-theme="dark"] {
+        --bg-main: #ffffff;
+        --bg-card: #ffffff;
+        --text-main: #000000;
+        --text-secondary: #333333;
+        --border-color: #dddddd;
+        --table-header-bg: #f3f4f6;
+        --table-border: #cccccc;
+    }
+    
+    body {
+        background-color: white !important;
+        color: black !important;
+    }
+    
+    .container, .bg-white, table, tr, td, th {
+        background-color: white !important;
+        color: black !important;
+    }
+    
+    a {
+        color: black !important;
+        text-decoration: none !important;
+    }
+    
+    .no-print {
+        display: none !important;
+    }
+}
+
+/* Dark mode toggle button icon handling */
+html[data-theme="dark"] #dark-icon {
+    display: none;
+}
+
+html[data-theme="dark"] #light-icon {
+    display: block;
+}
+
+html:not([data-theme="dark"]) #dark-icon {
+    display: block;
+}
+
+html:not([data-theme="dark"]) #light-icon {
+    display: none;
+}

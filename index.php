@@ -17,11 +17,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!validateCSRFToken($_POST['csrf_token'] ?? '')) {
         $loginError = 'Ungültige Sitzung. Bitte versuchen Sie es erneut.';
     } else {
-        $email = $_POST['email'] ?? '';
-        $password = $_POST['password'] ?? '';
+        $email = sanitizeInput($_POST['email'] ?? '');
+        $password = $_POST['password'] ?? ''; // Passwort nicht sanitieren, da es gehasht wird
         
-        if (empty($email) || empty($password)) {
-            $loginError = 'Bitte geben Sie E-Mail und Passwort ein.';
+        // Validierung mit der verbesserten Funktion
+        $rules = [
+            'email' => ['required' => true, 'email' => true],
+            'password' => ['required' => true]
+        ];
+        
+        $errors = validateForm([
+            'email' => $email,
+            'password' => $password
+        ], $rules);
+        
+        if (!empty($errors)) {
+            $loginError = implode(' ', $errors);
         } else {
             $user = authenticateUser($email, $password);
             
@@ -52,96 +63,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $csrf_token = generateCSRFToken();
 ?>
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" data-theme="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="description" content="<?= APP_NAME ?> - Sichere Verwaltung von Notfallkontakten für Basketballvereine">
+    <meta name="theme-color" content="#e65100">
+    
     <title><?= APP_NAME ?> - Login</title>
+    
+    <!-- CSS Libraries -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Application CSS -->
     <link rel="stylesheet" href="assets/css/styles.css">
-    <style>
-        /* Dark Mode Grundeinstellungen */
-        body {
-            background-color: #121212 !important;
-            color: #e0e0e0 !important;
-        }
-
-        /* Dark Mode für Hauptcontainer */
-        .bg-white, .bg-gray-50, .bg-gray-100 {
-            background-color: #1e1e1e !important;
-            color: #e0e0e0 !important;
-        }
-
-        /* Dark Mode für Text */
-        .text-gray-600, .text-gray-700, .text-gray-800, .text-gray-900 {
-            color: #b0b0b0 !important;
-        }
-
-        /* Dark Mode für Formulare */
-        input, select, textarea {
-            background-color: #262626 !important;
-            color: #ffffff !important;
-            border-color: #444 !important;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            border-color: #e65100 !important;
-        }
-
-        ::placeholder {
-            color: #808080 !important;
-            opacity: 1;
-        }
-
-        /* Dark Mode für Meldungen */
-        .bg-red-100 {
-            background-color: #4a1d1a !important;
-            border-color: #e53e3e !important;
-        }
-
-        .text-red-700 {
-            color: #feb2b2 !important;
-        }
-
-        .bg-green-100 {
-            background-color: #1b3a2a !important;
-            border-color: #38a169 !important;
-        }
-
-        .text-green-700 {
-            color: #7ae2b0 !important;
-        }
-
-        /* Dark Mode für Buttons */
-        .bg-orange-500 {
-            background-color: #e65100 !important;
-        }
-
-        .bg-orange-500:hover {
-            background-color: #ff6d00 !important;
-        }
-
-        /* Dark Mode für Links */
-        a.text-orange-600 {
-            color: #ff9800 !important;
-        }
-
-        a.text-orange-600:hover {
-            color: #ffb74d !important;
-        }
-
-        /* Schatten im Dark Mode anpassen */
-        .shadow-md {
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.25) !important;
-        }
-    </style>
+    <link rel="stylesheet" href="assets/css/dark-mode.css">
 </head>
-<body class="bg-gray-100 min-h-screen">
+<body class="bg-gray-100 min-h-screen flex items-center justify-center page-transition">
     <div class="flex flex-col items-center justify-center min-h-screen p-4">
         <div class="bg-white p-6 sm:p-8 rounded-lg shadow-md w-full max-w-md">
             <div class="text-center mb-8">
-                <i class="fas fa-basketball-ball text-orange-500 text-4xl sm:text-5xl"></i>
+                <i class="fas fa-basketball-ball text-orange-500 text-4xl sm:text-5xl" aria-hidden="true"></i>
                 <h1 class="text-2xl font-bold mt-4"><?= APP_NAME ?></h1>
                 <p class="text-gray-600">Bitte melden Sie sich an</p>
             </div>
@@ -158,7 +101,7 @@ $csrf_token = generateCSRFToken();
             if (!empty($messages)): 
                 foreach ($messages as $msg):
             ?>
-                <div class="mb-4 bg-<?= $msg['type'] ?>-100 border-l-4 border-<?= $msg['type'] ?>-500 text-<?= $msg['type'] ?>-700 p-4">
+                <div class="mb-4 bg-<?= $msg['type'] ?>-100 border-l-4 border-<?= $msg['type'] ?>-500 text-<?= $msg['type'] ?>-700 p-4" role="alert">
                     <p><?= e($msg['text']) ?></p>
                 </div>
             <?php 
@@ -170,20 +113,53 @@ $csrf_token = generateCSRFToken();
                 <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
                 
                 <div>
-                    <label for="email" class="block text-gray-700">E-Mail</label>
-                    <input type="email" id="email" name="email" class="w-full p-2 border rounded mt-1 focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-800" placeholder="ihre@email.de" required>
+                    <label for="email" id="email_label" class="block text-gray-700">E-Mail</label>
+                    <input type="email" 
+                           id="email" 
+                           name="email" 
+                           class="w-full p-2 border rounded mt-1 focus:outline-none focus:ring-2 focus:ring-orange-500" 
+                           placeholder="ihre@email.de" 
+                           required
+                           aria-required="true"
+                           aria-labelledby="email_label"
+                           aria-invalid="<?= !empty($loginError) ? 'true' : 'false' ?>"
+                           autocomplete="email">
                 </div>
                 
                 <div>
-                    <label for="password" class="block text-gray-700">Passwort</label>
-                    <input type="password" id="password" name="password" class="w-full p-2 border rounded mt-1 focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-800" placeholder="Passwort" required>
+                    <label for="password" id="password_label" class="block text-gray-700">Passwort</label>
+                    <div class="relative">
+                        <input type="password" 
+                               id="password" 
+                               name="password" 
+                               class="w-full p-2 border rounded mt-1 focus:outline-none focus:ring-2 focus:ring-orange-500" 
+                               placeholder="Passwort" 
+                               required
+                               aria-required="true"
+                               aria-labelledby="password_label"
+                               aria-invalid="<?= !empty($loginError) ? 'true' : 'false' ?>"
+                               autocomplete="current-password">
+                        <button type="button" 
+                                id="toggle-password" 
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5 mt-1"
+                                aria-label="Passwort anzeigen/verstecken">
+                            <i class="fas fa-eye text-gray-500" id="eye-icon" aria-hidden="true"></i>
+                            <i class="fas fa-eye-slash text-gray-500 hidden" id="eye-slash-icon" aria-hidden="true"></i>
+                        </button>
+                    </div>
                 </div>
                 
-                <button type="submit" class="w-full bg-orange-500 text-white p-2 rounded font-medium hover:bg-orange-600">Anmelden</button>
+                <button type="submit" 
+                        class="w-full bg-orange-500 text-white p-2 rounded font-medium hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-opacity-50"
+                        aria-label="Anmelden">
+                    Anmelden
+                </button>
             </form>
             
             <div class="mt-4 text-center text-sm text-gray-600">
-                <a href="reset_password.php" class="text-orange-600 hover:text-orange-800">
+                <a href="reset_password.php" 
+                   class="text-orange-600 hover:text-orange-800 focus:outline-none focus:underline"
+                   aria-label="Passwort zurücksetzen">
                     Passwort vergessen?
                 </a>
                 <p class="mt-2">Bei Problemen wenden Sie sich bitte an Ihren Administrator</p>
@@ -194,17 +170,63 @@ $csrf_token = generateCSRFToken();
                     Mit der Anmeldung akzeptieren Sie unsere
                 </p>
                 <div class="flex justify-center space-x-3">
-                    <a href="privacy_policy.php" class="text-orange-600 hover:text-orange-800">Datenschutzerklärung</a>
-                    <a href="impressum.php" class="text-orange-600 hover:text-orange-800">Impressum</a>
+                    <a href="privacy_policy.php" 
+                       class="text-orange-600 hover:text-orange-800 focus:outline-none focus:underline"
+                       aria-label="Datenschutzerklärung öffnen">
+                       Datenschutzerklärung
+                    </a>
+                    <a href="impressum.php" 
+                       class="text-orange-600 hover:text-orange-800 focus:outline-none focus:underline"
+                       aria-label="Impressum öffnen">
+                       Impressum
+                    </a>
                 </div>
             </div>
         </div>
         
         <div class="mt-4 text-center text-sm text-gray-500">
-            <?= APP_NAME ?> &copy; <?= date('Y') ?> | <i class="fas fa-lock text-xs"></i> SSL-gesichert
+            <?= APP_NAME ?> &copy; <?= date('Y') ?> | <i class="fas fa-lock text-xs" aria-hidden="true"></i> SSL-gesichert
         </div>
+        
+        <!-- Enhanced Accessibility Feature: Dark Mode Toggle -->
+        <button id="theme-toggle" 
+                class="mt-4 p-2 rounded-full bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400"
+                aria-label="Dunkelmodus umschalten">
+            <i class="fas fa-moon text-gray-700" id="dark-icon" aria-hidden="true"></i>
+            <i class="fas fa-sun text-orange-500 hidden" id="light-icon" aria-hidden="true"></i>
+        </button>
     </div>
 
-    <script src="assets/js/scripts.js"></script>
+    <script src="assets/js/dark-mode.js" defer></script>
+    <script>
+        // Toggle password visibility
+        document.addEventListener('DOMContentLoaded', function() {
+            const togglePassword = document.getElementById('toggle-password');
+            const password = document.getElementById('password');
+            const eyeIcon = document.getElementById('eye-icon');
+            const eyeSlashIcon = document.getElementById('eye-slash-icon');
+            
+            if (togglePassword && password) {
+                togglePassword.addEventListener('click', function() {
+                    // Toggle password visibility
+                    const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+                    password.setAttribute('type', type);
+                    
+                    // Toggle eye icons
+                    eyeIcon.classList.toggle('hidden');
+                    eyeSlashIcon.classList.toggle('hidden');
+                    
+                    // Set focus back to password field
+                    password.focus();
+                });
+            }
+            
+            // Auto-focus to email field on page load
+            const emailField = document.getElementById('email');
+            if (emailField) {
+                emailField.focus();
+            }
+        });
+    </script>
 </body>
 </html>
